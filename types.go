@@ -6,20 +6,6 @@ import (
 	"reflect"
 )
 
-type scoreboard struct {
-	Resource   string
-	Parameters struct {
-		GameDate  string
-		LeagueID  string
-		DayOffset string
-	}
-	ResultSets []struct {
-		Name    string
-		Headers []string
-		RowSet  []json.RawMessage
-	}
-}
-
 type Game struct {
 	Available                  Available
 	Header                     GameHeader
@@ -160,19 +146,19 @@ type Scoreboard struct {
 }
 
 func (s *Scoreboard) UnmarshalJSON(b []byte) error {
-	var sc scoreboard
+	var res result
 
-	if err := json.Unmarshal(b, &sc); err != nil {
+	if err := json.Unmarshal(b, &res); err != nil {
 		return err
 	}
 
-	g, err := unmarshalScoreboardV1(&sc)
+	g, err := unmarshalScoreboardV1(&res)
 
 	if err != nil {
 		return err
 	}
 
-	s.Date = sc.Parameters.GameDate
+	s.Date = res.Parameters["GameDate"].(string)
 	s.Games = g
 
 	return nil
@@ -184,19 +170,19 @@ type ScoreboardV2 struct {
 }
 
 func (s *ScoreboardV2) UnmarshalJSON(b []byte) error {
-	var sc scoreboard
+	var res result
 
-	if err := json.Unmarshal(b, &sc); err != nil {
+	if err := json.Unmarshal(b, &res); err != nil {
 		return err
 	}
 
-	g, err := unmarshalScoreboardV1(&sc)
+	g, err := unmarshalScoreboardV1(&res)
 
 	if err != nil {
 		return err
 	}
 
-	s.Date = sc.Parameters.GameDate
+	s.Date = res.Parameters["GameDate"].(string)
 	s.Games = make([]GameV2, len(g))
 
 	for i := range g {
@@ -208,14 +194,14 @@ func (s *ScoreboardV2) UnmarshalJSON(b []byte) error {
 		leaders []TeamLeaders
 	)
 
-	for i := range sc.ResultSets {
+	for i := range res.ResultSets {
 		var (
 			dest interface{}
-			rs   = sc.ResultSets[i]
+			rs   = res.ResultSets[i]
 			l    = len(rs.RowSet)
 		)
 
-		switch sc.ResultSets[i].Name {
+		switch res.ResultSets[i].Name {
 		case "TeamLeaders":
 			leaders = make([]TeamLeaders, l)
 			dest = leaders
@@ -254,7 +240,7 @@ func (s *ScoreboardV2) UnmarshalJSON(b []byte) error {
 
 	return nil
 }
-func unmarshalScoreboardV1(sc *scoreboard) ([]Game, error) {
+func unmarshalScoreboardV1(res *result) ([]Game, error) {
 	var (
 		headers   []GameHeader
 		lscores   []LineScore
@@ -265,14 +251,14 @@ func unmarshalScoreboardV1(sc *scoreboard) ([]Game, error) {
 		av        []Available
 	)
 
-	for i := range sc.ResultSets {
+	for i := range res.ResultSets {
 		var (
 			dest interface{}
-			rs   = sc.ResultSets[i]
+			rs   = res.ResultSets[i]
 			l    = len(rs.RowSet)
 		)
 
-		switch sc.ResultSets[i].Name {
+		switch res.ResultSets[i].Name {
 		case "GameHeader":
 			headers = make([]GameHeader, l)
 			dest = headers

@@ -1,5 +1,15 @@
 [
     {
+        "name": "CommonAllPlayers",
+        "path": "commonallplayers",
+        "return": "map[string]interface{}",
+        "parameters": [
+            { "name": "LeagueID", "type": "string" },
+            { "name": "Season", "type": "string" },
+            { "name": "IsOnlyCurrentSeason", "type": "bool" }
+        ]
+    },
+    {
         "name": "Scoreboard",
         "path": "scoreboard",
         "return": "*Scoreboard",

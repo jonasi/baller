@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"strings"
 	"text/template"
 )
 
@@ -17,10 +18,8 @@ type param struct {
 
 func (p param) StringEnc() string {
 	switch p.Type {
-	case "string":
-		return p.Name
-	case "int":
-		return "strconv.Itoa(" + p.Name + ")"
+	case "string", "int", "bool":
+		return fmt.Sprintf("encode%s(%s)", strings.Title(p.Type), p.Name)
 	default:
 		panic("Invalid type " + p.Type)
 	}
@@ -28,6 +27,8 @@ func (p param) StringEnc() string {
 
 func (p param) Flag(setVar string) string {
 	switch p.Type {
+	case "bool":
+		return fmt.Sprintf(`%s.Bool("%s", false, "")`, setVar, p.Name)
 	case "string":
 		return fmt.Sprintf(`%s.String("%s", "", "")`, setVar, p.Name)
 	case "int":
@@ -99,7 +100,6 @@ package baller
 
 import (
 	"net/url"
-	"strconv"
 )
 
 {{ range $i, $method := .methods }}

@@ -63,3 +63,13 @@ func (c *Client) do(url string, dest interface{}) error {
 
 	return json.Unmarshal(b, dest)
 }
+
+type result struct {
+	Resource   string
+	Parameters map[string]interface{}
+	ResultSets []struct {
+		Name    string
+		Headers []string
+		RowSet  []json.RawMessage
+	}
+}
