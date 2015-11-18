@@ -6,11 +6,14 @@ import (
 	"net/url"
 )
 
-func (c *Client) CommonAllPlayers(LeagueID string, Season string, IsOnlyCurrentSeason bool) (map[string]interface{}, error) {
+type CommonAllPlayers_Result struct {
+}
+
+func (c *Client) CommonAllPlayers(LeagueID string, Season string, IsOnlyCurrentSeason bool) (*CommonAllPlayers_Result, error) {
 	var (
 		q    = url.Values{}
 		url  = baseURL + "commonallplayers?"
-		dest map[string]interface{}
+		dest CommonAllPlayers_Result
 	)
 
 	q.Set("LeagueID", encodeString(LeagueID))
@@ -21,14 +24,17 @@ func (c *Client) CommonAllPlayers(LeagueID string, Season string, IsOnlyCurrentS
 		return nil, err
 	}
 
-	return dest, nil
+	return &dest, nil
 }
 
-func (c *Client) Scoreboard(GameDate string, LeagueID string, DayOffset int) (*Scoreboard, error) {
+type Scoreboard_Result struct {
+}
+
+func (c *Client) Scoreboard(GameDate string, LeagueID string, DayOffset int) (*Scoreboard_Result, error) {
 	var (
 		q    = url.Values{}
 		url  = baseURL + "scoreboard?"
-		dest *Scoreboard
+		dest Scoreboard_Result
 	)
 
 	q.Set("GameDate", encodeString(GameDate))
@@ -39,14 +45,24 @@ func (c *Client) Scoreboard(GameDate string, LeagueID string, DayOffset int) (*S
 		return nil, err
 	}
 
-	return dest, nil
+	return &dest, nil
 }
 
-func (c *Client) ScoreboardV2(GameDate string, LeagueID string, DayOffset int) (*ScoreboardV2, error) {
+type ScoreboardV2_GameHeader struct {
+	GAME_DATE_EST string
+	GAME_SEQUENCE int
+	GAME_ID       string
+}
+
+type ScoreboardV2_Result struct {
+	GameHeader []ScoreboardV2_GameHeader
+}
+
+func (c *Client) ScoreboardV2(GameDate string, LeagueID string, DayOffset int) (*ScoreboardV2_Result, error) {
 	var (
 		q    = url.Values{}
 		url  = baseURL + "scoreboardv2?"
-		dest *ScoreboardV2
+		dest ScoreboardV2_Result
 	)
 
 	q.Set("GameDate", encodeString(GameDate))
@@ -57,5 +73,5 @@ func (c *Client) ScoreboardV2(GameDate string, LeagueID string, DayOffset int) (
 		return nil, err
 	}
 
-	return dest, nil
+	return &dest, nil
 }

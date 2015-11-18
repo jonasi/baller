@@ -38,11 +38,16 @@ func (p param) Flag(setVar string) string {
 	}
 }
 
+type res struct {
+	Name    string
+	Headers []param
+}
+
 type method struct {
 	Name       string
 	Path       string
-	Return     string
 	Parameters []param
+	Results    []res
 }
 
 var (
@@ -103,11 +108,23 @@ import (
 )
 
 {{ range $i, $method := .methods }}
-func (c *Client) {{ $method.Name }}({{ range $j, $param := $method.Parameters }}{{ $param.Name }} {{ $param.Type }}{{ if ne $j ($method.Parameters | len) }}, {{end}}{{ end }}) ({{ $method.Return }}, error) {
+{{ range $j, $res := $method.Results }}
+type {{ $method.Name }}_{{ $res.Name }} struct {
+	{{ range $k, $p := $res.Headers }}
+	{{ $p.Name }} {{ $p.Type }}{{ end }}
+}
+{{ end }}
+
+type {{ $method.Name }}_Result struct {
+	{{ range $j, $res := $method.Results }}
+	{{ $res.Name }} []{{ $method.Name }}_{{ $res.Name }}{{ end }}
+}
+
+func (c *Client) {{ $method.Name }}({{ range $j, $param := $method.Parameters }}{{ $param.Name }} {{ $param.Type }}{{ if ne $j ($method.Parameters | len) }}, {{end}}{{ end }}) (*{{ $method.Name }}_Result, error) {
 	var (
 		q = url.Values{}
 		url = baseURL + "{{ $method.Path }}?"
-		dest  {{ $method.Return }}
+		dest  {{ $method.Name }}_Result
 	)
 
 	{{ range $j, $param := $method.Parameters }}
@@ -117,7 +134,7 @@ func (c *Client) {{ $method.Name }}({{ range $j, $param := $method.Parameters }}
 		return nil, err
 	}
 
-	return dest, nil
+	return &dest, nil
 }
 {{ end }}`))
 

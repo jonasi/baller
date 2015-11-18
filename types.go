@@ -241,53 +241,29 @@ func (s *ScoreboardV2) UnmarshalJSON(b []byte) error {
 	return nil
 }
 func unmarshalScoreboardV1(res *result) ([]Game, error) {
-	var (
-		headers   []GameHeader
-		lscores   []LineScore
-		standings []SeriesStandings
-		last      []LastMeeting
-		est       []Standings
-		wst       []Standings
-		av        []Available
-	)
+	data, err := res.unmarshalResultSets(map[string]interface{}{
+		"GameHeader":             GameHeader{},
+		"LineScore":              LineScore{},
+		"SeriesStandings":        SeriesStandings{},
+		"LastMeeting":            LastMeeting{},
+		"EastConfStandingsByDay": Standings{},
+		"WestConfStandingsByDay": Standings{},
+		"Available":              Available{},
+	})
 
-	for i := range res.ResultSets {
-		var (
-			dest interface{}
-			rs   = res.ResultSets[i]
-			l    = len(rs.RowSet)
-		)
-
-		switch res.ResultSets[i].Name {
-		case "GameHeader":
-			headers = make([]GameHeader, l)
-			dest = headers
-		case "LineScore":
-			lscores = make([]LineScore, l)
-			dest = lscores
-		case "SeriesStandings":
-			standings = make([]SeriesStandings, l)
-			dest = standings
-		case "LastMeeting":
-			last = make([]LastMeeting, l)
-			dest = last
-		case "EastConfStandingsByDay":
-			est = make([]Standings, l)
-			dest = est
-		case "WestConfStandingsByDay":
-			wst = make([]Standings, l)
-			dest = wst
-		case "Available":
-			av = make([]Available, l)
-			dest = av
-		}
-
-		if dest != nil {
-			if err := decodeResultSet(dest, rs.Headers, rs.RowSet); err != nil {
-				return nil, err
-			}
-		}
+	if err != nil {
+		return nil, err
 	}
+
+	var (
+		headers   = data["GameHeader"].([]GameHeader)
+		est       = data["EastConfStandingsByDay"].([]Standings)
+		wst       = data["WestConfStandingsByDay"].([]Standings)
+		av        = data["Available"].([]Available)
+		standings = data["SeriesStandings"].([]SeriesStandings)
+		last      = data["LastMeeting"].([]LastMeeting)
+		lscores   = data["LineScore"].([]LineScore)
+	)
 
 	games := make([]Game, len(headers))
 	gameMap := map[string]*Game{}

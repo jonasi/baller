@@ -22,11 +22,20 @@
     {
         "name": "ScoreboardV2",
         "path": "scoreboardv2",
-        "return": "*ScoreboardV2",
         "parameters": [
             { "name": "GameDate", "type": "string" },
             { "name": "LeagueID", "type": "string" },
             { "name": "DayOffset", "type": "int" }
+        ],
+        "results": [
+            {
+                "name": "GameHeader",
+                "headers": [
+                    { "name": "GAME_DATE_EST", "type": "string" },
+                    { "name": "GAME_SEQUENCE", "type": "int" },
+                    { "name": "GAME_ID", "type": "string" }
+                ]
+            }
         ]
     }
 ]

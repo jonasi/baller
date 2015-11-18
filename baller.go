@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"reflect"
 )
 
 const (
@@ -72,4 +73,47 @@ type result struct {
 		Headers []string
 		RowSet  []json.RawMessage
 	}
+}
+
+func (r *result) unmarshalResultSet(name string, typ interface{}) (interface{}, error) {
+	var (
+		headers []string
+		row     []json.RawMessage
+	)
+
+	for i := range r.ResultSets {
+		if r.ResultSets[i].Name == name {
+			headers = r.ResultSets[i].Headers
+			row = r.ResultSets[i].RowSet
+			break
+		}
+	}
+
+	if headers == nil {
+		return nil, fmt.Errorf("Row set %s not found", name)
+	}
+
+	dest := reflect.MakeSlice(reflect.SliceOf(reflect.TypeOf(typ)), len(row), len(row)).Interface()
+
+	if err := decodeResultSet(dest, headers, row); err != nil {
+		return nil, err
+	}
+
+	return dest, nil
+}
+
+func (r *result) unmarshalResultSets(m map[string]interface{}) (map[string]interface{}, error) {
+	ret := map[string]interface{}{}
+
+	for k, typ := range m {
+		v, err := r.unmarshalResultSet(k, typ)
+
+		if err != nil {
+			return nil, err
+		}
+
+		ret[k] = v
+	}
+
+	return ret, nil
 }
