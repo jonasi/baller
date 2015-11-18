@@ -3,6 +3,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -61,5 +62,6 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Printf("%#v", data)
+	b, _ := json.MarshalIndent(data, "", "    ")
+	fmt.Println(string(b))
 }
