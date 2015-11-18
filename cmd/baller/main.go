@@ -62,6 +62,11 @@ func main() {
 		panic(err)
 	}
 
-	b, _ := json.MarshalIndent(data, "", "    ")
+	b, err := json.MarshalIndent(data, "", "   ")
+
+	if err != nil {
+		panic(err)
+	}
+
 	fmt.Println(string(b))
 }

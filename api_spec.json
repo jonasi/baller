@@ -12,7 +12,7 @@
     {
         "name": "ScoreboardV2",
         "path": "scoreboardv2",
-        "return": "map[string]interface{}",
+        "return": "*ScoreboardV2",
         "parameters": [
             { "name": "GameDate", "type": "string" },
             { "name": "LeagueID", "type": "string" },

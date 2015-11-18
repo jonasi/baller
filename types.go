@@ -20,11 +20,6 @@ type scoreboard struct {
 	}
 }
 
-type Scoreboard struct {
-	Date  string
-	Games []Game
-}
-
 type Game struct {
 	Available                  Available
 	Header                     GameHeader
@@ -34,6 +29,13 @@ type Game struct {
 	LastMeeting                LastMeeting
 	EasternConferenceStandings []Standings
 	WesternConferenceStandings []Standings
+}
+
+type GameV2 struct {
+	Game
+	HomeTeamLeaders     TeamLeaders
+	VisitingTeamLeaders TeamLeaders
+	TicketLinks         TicketLinks
 }
 
 type GameHeader struct {
@@ -130,9 +132,130 @@ type Available struct {
 	PTAvailable int    `header:"PT_AVAILABLE"`
 }
 
+type TeamLeaders struct {
+	GameID           string `header:"GAME_ID"`
+	TeamID           int    `header:"TEAM_ID"`
+	TeamCity         string `header:"TEAM_CITY"`
+	TeamNickname     string `header:"TEAM_NICKNAME"`
+	TeamAbbreviation string `header:"TEAM_ABBREVIATION"`
+	PtsPlayerID      int    `header:"PTS_PLAYER_ID"`
+	PtsPlayerName    string `header:"PTS_PLAYER_NAME"`
+	Pts              int    `header:"PTS"`
+	RebPlayerID      int    `header:"REB_PLAYER_ID"`
+	RebPlayerName    string `header:"REB_PLAYER_NAME"`
+	Reb              int    `header:"REB"`
+	AstPlayerID      int    `header:"AST_PLAYER_ID"`
+	AstPlayerName    string `header:"AST_PLAYER_NAME"`
+	Ast              int    `header:"AST"`
+}
+
+type TicketLinks struct {
+	GameID    string `header:"GAME_ID"`
+	LeagueTix string `header:"LEAG_TIX"`
+}
+
+type Scoreboard struct {
+	Date  string
+	Games []Game
+}
+
 func (s *Scoreboard) UnmarshalJSON(b []byte) error {
+	var sc scoreboard
+
+	if err := json.Unmarshal(b, &sc); err != nil {
+		return err
+	}
+
+	g, err := unmarshalScoreboardV1(&sc)
+
+	if err != nil {
+		return err
+	}
+
+	s.Date = sc.Parameters.GameDate
+	s.Games = g
+
+	return nil
+}
+
+type ScoreboardV2 struct {
+	Date  string
+	Games []GameV2
+}
+
+func (s *ScoreboardV2) UnmarshalJSON(b []byte) error {
+	var sc scoreboard
+
+	if err := json.Unmarshal(b, &sc); err != nil {
+		return err
+	}
+
+	g, err := unmarshalScoreboardV1(&sc)
+
+	if err != nil {
+		return err
+	}
+
+	s.Date = sc.Parameters.GameDate
+	s.Games = make([]GameV2, len(g))
+
+	for i := range g {
+		s.Games[i].Game = g[i]
+	}
+
 	var (
-		sc        scoreboard
+		tickets []TicketLinks
+		leaders []TeamLeaders
+	)
+
+	for i := range sc.ResultSets {
+		var (
+			dest interface{}
+			rs   = sc.ResultSets[i]
+			l    = len(rs.RowSet)
+		)
+
+		switch sc.ResultSets[i].Name {
+		case "TeamLeaders":
+			leaders = make([]TeamLeaders, l)
+			dest = leaders
+		case "TicketLinks":
+			tickets = make([]TicketLinks, l)
+			dest = tickets
+		}
+
+		if dest != nil {
+			if err := decodeResultSet(dest, rs.Headers, rs.RowSet); err != nil {
+				return err
+			}
+		}
+	}
+
+	gameMap := map[string]*GameV2{}
+
+	for i := range s.Games {
+		gameMap[s.Games[i].Header.GameID] = &s.Games[i]
+	}
+
+	for i := range tickets {
+		gm := gameMap[tickets[i].GameID]
+		gm.TicketLinks = tickets[i]
+	}
+
+	for i := range leaders {
+		gm := gameMap[leaders[i].GameID]
+
+		if leaders[i].TeamID == gm.Header.HomeTeamID {
+			gm.HomeTeamLeaders = leaders[i]
+		} else {
+			gm.VisitingTeamLeaders = leaders[i]
+		}
+	}
+
+	return nil
+}
+func unmarshalScoreboardV1(sc *scoreboard) ([]Game, error) {
+	var (
 		headers   []GameHeader
 		lscores   []LineScore
 		standings []SeriesStandings
@@ -141,10 +264,6 @@ func (s *Scoreboard) UnmarshalJSON(b []byte) error {
 		wst       []Standings
 		av        []Available
 	)
-
-	if err := json.Unmarshal(b, &sc); err != nil {
-		return err
-	}
 
 	for i := range sc.ResultSets {
 		var (
@@ -179,20 +298,19 @@ func (s *Scoreboard) UnmarshalJSON(b []byte) error {
 
 		if dest != nil {
 			if err := decodeResultSet(dest, rs.Headers, rs.RowSet); err != nil {
-				return err
+				return nil, err
 			}
 		}
 	}
 
-	s.Date = sc.Parameters.GameDate
-	s.Games = make([]Game, len(headers))
+	games := make([]Game, len(headers))
 	gameMap := map[string]*Game{}
 
-	for i := range s.Games {
-		gameMap[headers[i].GameID] = &s.Games[i]
-		s.Games[i].Header = headers[i]
-		s.Games[i].EasternConferenceStandings = est
-		s.Games[i].WesternConferenceStandings = wst
+	for i := range games {
+		gameMap[headers[i].GameID] = &games[i]
+		games[i].Header = headers[i]
+		games[i].EasternConferenceStandings = est
+		games[i].WesternConferenceStandings = wst
 	}
 
 	for i := range av {
@@ -220,7 +338,7 @@ func (s *Scoreboard) UnmarshalJSON(b []byte) error {
 		}
 	}
 
-	return nil
+	return games, nil
 }
 
 func decodeResultSet(dest interface{}, headers []string, rowset []json.RawMessage) error {

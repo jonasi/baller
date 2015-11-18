@@ -127,6 +127,7 @@ var cliTemplate = template.Must(template.New("").Parse(
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -166,6 +167,12 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Printf("%#v", data)
+	b, err := json.MarshalIndent(data, "", "   ")
+
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(string(b))
 }
 `))

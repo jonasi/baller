@@ -25,11 +25,11 @@ func (c *Client) Scoreboard(GameDate string, LeagueID string, DayOffset int) (*S
 	return dest, nil
 }
 
-func (c *Client) ScoreboardV2(GameDate string, LeagueID string, DayOffset int) (map[string]interface{}, error) {
+func (c *Client) ScoreboardV2(GameDate string, LeagueID string, DayOffset int) (*ScoreboardV2, error) {
 	var (
 		q    = url.Values{}
 		url  = baseURL + "scoreboardv2?"
-		dest map[string]interface{}
+		dest *ScoreboardV2
 	)
 
 	q.Set("GameDate", GameDate)
