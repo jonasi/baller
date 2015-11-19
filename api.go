@@ -137,15 +137,89 @@ type ResultPlayer struct {
 	GAMES_PLAYED_FLAG        string `header:"GAMES_PLAYED_FLAG"`
 }
 
-type CommonAllPlayers_Result struct {
+type ResultPlayerInfo struct {
+	PERSON_ID                int    `header:"PERSON_ID"`
+	FIRST_NAME               string `header:"FIRST_NAME"`
+	LAST_NAME                string `header:"LAST_NAME"`
+	DISPLAY_FIRST_LAST       string `header:"DISPLAY_FIRST_LAST"`
+	DISPLAY_LAST_COMMA_FIRST string `header:"DISPLAY_LAST_COMMA_FIRST"`
+	DISPLAY_FI_LAST          string `header:"DISPLAY_FI_LAST"`
+	BIRTHDATE                string `header:"BIRTHDATE"`
+	SCHOOL                   string `header:"SCHOOL"`
+	COUNTRY                  string `header:"COUNTRY"`
+	LAST_AFFILIATION         string `header:"LAST_AFFILIATION"`
+	HEIGHT                   string `header:"HEIGHT"`
+	WEIGHT                   string `header:"WEIGHT"`
+	SEASON_EXP               int    `header:"SEASON_EXP"`
+	JERSEY                   string `header:"JERSEY"`
+	POSITION                 string `header:"POSITION"`
+	ROSTERSTATUS             string `header:"ROSTERSTATUS"`
+	TEAM_ID                  int    `header:"TEAM_ID"`
+	TEAM_NAME                string `header:"TEAM_NAME"`
+	TEAM_ABBREVIATION        string `header:"TEAM_ABBREVIATION"`
+	TEAM_CODE                string `header:"TEAM_CODE"`
+	TEAM_CITY                string `header:"TEAM_CITY"`
+	PLAYERCODE               string `header:"PLAYERCODE"`
+	FROM_YEAR                int    `header:"FROM_YEAR"`
+	TO_YEAR                  int    `header:"TO_YEAR"`
+	DLEAGUE_FLAG             string `header:"DLEAGUE_FLAG"`
+	GAMES_PLAYED_FLAG        string `header:"GAMES_PLAYED_FLAG"`
+}
+
+type ResultPlayerHeadlineStats struct {
+	PLAYER_ID   int     `header:"PLAYER_ID"`
+	PLAYER_NAME string  `header:"PLAYER_NAME"`
+	TimeFrame   string  `header:"TimeFrame"`
+	PTS         float32 `header:"PTS"`
+	AST         float32 `header:"AST"`
+	REB         float32 `header:"REB"`
+	PIE         float32 `header:"PIE"`
+}
+
+type CommonPlayerInfoResponse struct {
+	CommonPlayerInfo    []ResultPlayerInfo
+	PlayerHeadlineStats []ResultPlayerHeadlineStats
+}
+
+func (c *Client) CommonPlayerInfo(PlayerID int, LeagueID string) (*CommonPlayerInfoResponse, error) {
+	var (
+		q    = url.Values{}
+		url  = baseURL + "commonplayerinfo?"
+		dest CommonPlayerInfoResponse
+		res  result
+	)
+
+	q.Set("PlayerID", encodeInt(PlayerID))
+	q.Set("LeagueID", encodeString(LeagueID))
+
+	if err := c.do(url+q.Encode(), &res); err != nil {
+		return nil, err
+	}
+
+	if d, err := res.unmarshalResultSet("CommonPlayerInfo", ResultPlayerInfo{}); err == nil {
+		dest.CommonPlayerInfo = d.([]ResultPlayerInfo)
+	} else {
+		return nil, err
+	}
+
+	if d, err := res.unmarshalResultSet("PlayerHeadlineStats", ResultPlayerHeadlineStats{}); err == nil {
+		dest.PlayerHeadlineStats = d.([]ResultPlayerHeadlineStats)
+	} else {
+		return nil, err
+	}
+
+	return &dest, nil
+}
+
+type CommonAllPlayersResponse struct {
 	CommonAllPlayers []ResultPlayer
 }
 
-func (c *Client) CommonAllPlayers(LeagueID string, Season string, IsOnlyCurrentSeason bool) (*CommonAllPlayers_Result, error) {
+func (c *Client) CommonAllPlayers(LeagueID string, Season string, IsOnlyCurrentSeason bool) (*CommonAllPlayersResponse, error) {
 	var (
 		q    = url.Values{}
 		url  = baseURL + "commonallplayers?"
-		dest CommonAllPlayers_Result
+		dest CommonAllPlayersResponse
 		res  result
 	)
 
@@ -166,7 +240,7 @@ func (c *Client) CommonAllPlayers(LeagueID string, Season string, IsOnlyCurrentS
 	return &dest, nil
 }
 
-type Scoreboard_Result struct {
+type ScoreboardResponse struct {
 	GameHeader             []ResultGameHeader
 	LineScore              []ResultLineScore
 	SeriesStandings        []ResultSeriesStandings
@@ -176,11 +250,11 @@ type Scoreboard_Result struct {
 	Available              []ResultAvailable
 }
 
-func (c *Client) Scoreboard(GameDate string, LeagueID string, DayOffset int) (*Scoreboard_Result, error) {
+func (c *Client) Scoreboard(GameDate string, LeagueID string, DayOffset int) (*ScoreboardResponse, error) {
 	var (
 		q    = url.Values{}
 		url  = baseURL + "scoreboard?"
-		dest Scoreboard_Result
+		dest ScoreboardResponse
 		res  result
 	)
 
@@ -237,7 +311,7 @@ func (c *Client) Scoreboard(GameDate string, LeagueID string, DayOffset int) (*S
 	return &dest, nil
 }
 
-type ScoreboardV2_Result struct {
+type ScoreboardV2Response struct {
 	GameHeader             []ResultGameHeader
 	LineScore              []ResultLineScore
 	SeriesStandings        []ResultSeriesStandings
@@ -249,11 +323,11 @@ type ScoreboardV2_Result struct {
 	TicketLinks            []ResultTicketLinks
 }
 
-func (c *Client) ScoreboardV2(GameDate string, LeagueID string, DayOffset int) (*ScoreboardV2_Result, error) {
+func (c *Client) ScoreboardV2(GameDate string, LeagueID string, DayOffset int) (*ScoreboardV2Response, error) {
 	var (
 		q    = url.Values{}
 		url  = baseURL + "scoreboardv2?"
-		dest ScoreboardV2_Result
+		dest ScoreboardV2Response
 		res  result
 	)
 

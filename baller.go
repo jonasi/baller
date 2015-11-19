@@ -65,9 +65,34 @@ func (c *Client) do(url string, dest interface{}) error {
 	return json.Unmarshal(b, dest)
 }
 
+type Parameters map[string]interface{}
+
+func (p *Parameters) UnmarshalJSON(b []byte) error {
+	if b[0] == '{' {
+		p2 := map[string]interface{}(*p)
+		return json.Unmarshal(b, &p2)
+	}
+
+	var p2 []map[string]interface{}
+
+	if err := json.Unmarshal(b, &p2); err != nil {
+		return err
+	}
+
+	*p = map[string]interface{}{}
+
+	for _, m := range p2 {
+		for k, v := range m {
+			(*p)[k] = v
+		}
+	}
+
+	return nil
+}
+
 type result struct {
 	Resource   string
-	Parameters map[string]interface{}
+	Parameters Parameters
 	ResultSets []struct {
 		Name    string
 		Headers []string

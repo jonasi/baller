@@ -4,10 +4,12 @@
             "name": "CommonPlayerInfo",
             "path": "commonplayerinfo",
             "parameters": [
-                { "name": "PlayerID", "type": "int" }
+                { "name": "PlayerID", "type": "int" },
+                { "name": "LeagueID", "type": "string" }
             ],
             "results": [
-                { "name": "CommonPlayerInfo", "result_type": "Player" }
+                { "name": "CommonPlayerInfo", "result_type": "PlayerInfo" },
+                { "name": "PlayerHeadlineStats", "result_type": "PlayerHeadlineStats" }
             ]
         },
         {
@@ -210,6 +212,49 @@
                 { "name": "TEAM_ABBREVIATION", "type": "string" },
                 { "name": "TEAM_CODE", "type": "string" },
                 { "name": "GAMES_PLAYED_FLAG", "type": "string" }
+            ]
+        },
+        {
+            "name": "PlayerInfo",
+            "headers": [
+                { "name": "PERSON_ID", "type": "int" },
+                { "name": "FIRST_NAME", "type": "string" },
+                { "name": "LAST_NAME", "type": "string" },
+                { "name": "DISPLAY_FIRST_LAST", "type": "string" },
+                { "name": "DISPLAY_LAST_COMMA_FIRST", "type": "string" },
+                { "name": "DISPLAY_FI_LAST", "type": "string" },
+                { "name": "BIRTHDATE", "type": "string" },
+                { "name": "SCHOOL", "type": "string" },
+                { "name": "COUNTRY", "type": "string" },
+                { "name": "LAST_AFFILIATION", "type": "string" },
+                { "name": "HEIGHT", "type": "string" },
+                { "name": "WEIGHT", "type": "string" },
+                { "name": "SEASON_EXP", "type": "int" },
+                { "name": "JERSEY", "type": "string" },
+                { "name": "POSITION", "type": "string" },
+                { "name": "ROSTERSTATUS", "type": "string" },
+                { "name": "TEAM_ID", "type": "int" },
+                { "name": "TEAM_NAME", "type": "string" },
+                { "name": "TEAM_ABBREVIATION", "type": "string" },
+                { "name": "TEAM_CODE", "type": "string" },
+                { "name": "TEAM_CITY", "type": "string" },
+                { "name": "PLAYERCODE", "type": "string" },
+                { "name": "FROM_YEAR", "type": "int" },
+                { "name": "TO_YEAR", "type": "int" },
+                { "name": "DLEAGUE_FLAG", "type": "string" },
+                { "name": "GAMES_PLAYED_FLAG", "type": "string" }
+            ]
+        },
+        {
+            "name": "PlayerHeadlineStats",
+            "headers": [
+                { "name": "PLAYER_ID", "type": "int" },
+                { "name": "PLAYER_NAME", "type": "string" },
+                { "name": "TimeFrame", "type": "string" },
+                { "name": "PTS", "type": "float32" },
+                { "name": "AST", "type": "float32" },
+                { "name": "REB", "type": "float32" },
+                { "name": "PIE", "type": "float32" }
             ]
         }
     ]

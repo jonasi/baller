@@ -125,16 +125,16 @@ type Result{{ $typ.Name }} struct {
 {{ end }}
 
 {{ range $i, $method := .spec.Methods }}
-type {{ $method.Name }}_Result struct {
+type {{ $method.Name }}Response struct {
 	{{ range $j, $res := $method.Results }}
 	{{ $res.Name }} []Result{{ $res.ResultType }}{{ end }}
 }
 
-func (c *Client) {{ $method.Name }}({{ range $j, $param := $method.Parameters }}{{ $param.Name }} {{ $param.Type }}{{ if ne $j ($method.Parameters | len) }}, {{end}}{{ end }}) (*{{ $method.Name }}_Result, error) {
+func (c *Client) {{ $method.Name }}({{ range $j, $param := $method.Parameters }}{{ $param.Name }} {{ $param.Type }}{{ if ne $j ($method.Parameters | len) }}, {{end}}{{ end }}) (*{{ $method.Name }}Response, error) {
 	var (
 		q = url.Values{}
 		url = baseURL + "{{ $method.Path }}?"
-		dest  {{ $method.Name }}_Result
+		dest  {{ $method.Name }}Response
 		res result
 	)
 

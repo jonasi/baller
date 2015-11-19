@@ -14,6 +14,24 @@ import (
 var methods = map[string]struct {
 	Do func(*baller.Client) (interface{}, error)
 }{
+	"CommonPlayerInfo": {
+		Do: func(cl *baller.Client) (interface{}, error) {
+			var (
+				fs       = flag.NewFlagSet("CommonPlayerInfo", flag.ExitOnError)
+				verbose  = fs.Bool("verbose", false, "")
+				PlayerID = fs.Int("PlayerID", 0, "")
+				LeagueID = fs.String("LeagueID", "", "")
+			)
+
+			fs.Parse(os.Args[2:])
+
+			if *verbose {
+				cl.Logger = os.Stderr
+			}
+
+			return cl.CommonPlayerInfo(*PlayerID, *LeagueID)
+		},
+	},
 	"CommonAllPlayers": {
 		Do: func(cl *baller.Client) (interface{}, error) {
 			var (
