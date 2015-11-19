@@ -117,3 +117,47 @@ func (r *result) unmarshalResultSets(m map[string]interface{}) (map[string]inter
 
 	return ret, nil
 }
+
+func decodeResultSet(dest interface{}, headers []string, rowset []json.RawMessage) error {
+	var (
+		v  = reflect.ValueOf(dest)
+		t  = v.Type().Elem()
+		mp = mkHeaderMap(t)
+	)
+
+	if len(headers) != len(mp) {
+		return fmt.Errorf("Expected %d headers, found %d for type %T\nheaders: %#v\nmap: %#v", len(headers), len(mp), dest, headers, mp)
+	}
+
+	for i := range rowset {
+		sl := make([]interface{}, len(headers))
+
+		for j, h := range headers {
+			if idx, ok := mp[h]; ok {
+				sl[j] = v.Index(i).Field(idx).Addr().Interface()
+			}
+		}
+
+		if err := json.Unmarshal(rowset[i], &sl); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func mkHeaderMap(t reflect.Type) map[string]int {
+	mp := map[string]int{}
+
+	for i := 0; i < t.NumField(); i++ {
+		h := t.Field(i).Tag.Get("header")
+
+		if h == "" {
+			continue
+		}
+
+		mp[h] = i
+	}
+
+	return mp
+}

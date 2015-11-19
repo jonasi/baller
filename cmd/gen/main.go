@@ -11,9 +11,31 @@ import (
 	"text/template"
 )
 
+type spec struct {
+	Methods     []method     `json:"methods"`
+	ResultTypes []resultType `json:"result_types"`
+}
+
+type method struct {
+	Name       string      `json:"name"`
+	Path       string      `json:"path"`
+	Parameters []param     `json:"parameters"`
+	Results    []resultRef `json:"results"`
+}
+
+type resultRef struct {
+	Name       string `json:"name"`
+	ResultType string `json:"result_type"`
+}
+
+type resultType struct {
+	Name    string  `json:"name"`
+	Headers []param `json:"headers"`
+}
+
 type param struct {
-	Name string
-	Type string
+	Name string `json:"name"`
+	Type string `json:"type"`
 }
 
 func (p param) StringEnc() string {
@@ -38,18 +60,6 @@ func (p param) Flag(setVar string) string {
 	}
 }
 
-type res struct {
-	Name    string
-	Headers []param
-}
-
-type method struct {
-	Name       string
-	Path       string
-	Parameters []param
-	Results    []res
-}
-
 var (
 	specFile = flag.String("spec", "", "")
 	mode     = flag.String("mode", "", "")
@@ -65,9 +75,9 @@ func main() {
 		panic(err)
 	}
 
-	var methods []method
+	var spec spec
 
-	if err := json.Unmarshal(b, &methods); err != nil {
+	if err := json.Unmarshal(b, &spec); err != nil {
 		panic(err)
 	}
 
@@ -79,11 +89,11 @@ func main() {
 
 	if *mode == "api" {
 		err = apiTemplate.Execute(apiFile, map[string]interface{}{
-			"methods": methods,
+			"spec": spec,
 		})
 	} else {
 		err = cliTemplate.Execute(apiFile, map[string]interface{}{
-			"methods": methods,
+			"spec": spec,
 		})
 	}
 
@@ -107,17 +117,17 @@ import (
 	"net/url"
 )
 
-{{ range $i, $method := .methods }}
-{{ range $j, $res := $method.Results }}
-type {{ $method.Name }}_{{ $res.Name }} struct {
-	{{ range $k, $p := $res.Headers }}
-	{{ $p.Name }} {{ $p.Type }}{{ end }}
+{{ range $i, $typ := .spec.ResultTypes }}
+type Result{{ $typ.Name }} struct {
+	{{ range $k, $p := $typ.Headers }}
+	{{ $p.Name }} {{ $p.Type }} ` + "`header:" + `"{{ $p.Name }}"` + "`" + `{{ end }}
 }
 {{ end }}
 
+{{ range $i, $method := .spec.Methods }}
 type {{ $method.Name }}_Result struct {
 	{{ range $j, $res := $method.Results }}
-	{{ $res.Name }} []{{ $method.Name }}_{{ $res.Name }}{{ end }}
+	{{ $res.Name }} []Result{{ $res.ResultType }}{{ end }}
 }
 
 func (c *Client) {{ $method.Name }}({{ range $j, $param := $method.Parameters }}{{ $param.Name }} {{ $param.Type }}{{ if ne $j ($method.Parameters | len) }}, {{end}}{{ end }}) (*{{ $method.Name }}_Result, error) {
@@ -125,14 +135,23 @@ func (c *Client) {{ $method.Name }}({{ range $j, $param := $method.Parameters }}
 		q = url.Values{}
 		url = baseURL + "{{ $method.Path }}?"
 		dest  {{ $method.Name }}_Result
+		res result
 	)
 
 	{{ range $j, $param := $method.Parameters }}
 		q.Set("{{ $param.Name }}", {{ $param.StringEnc }}){{ end }}
 
-	if err := c.do(url + q.Encode(), &dest); err != nil {
+	if err := c.do(url + q.Encode(), &res); err != nil {
 		return nil, err
 	}
+
+	{{ range $j, $res := $method.Results }}
+	if d, err := res.unmarshalResultSet("{{ $res.Name }}", Result{{ $res.ResultType }}{}); err == nil {
+		dest.{{ $res.Name }} = d.([]Result{{ $res.ResultType }})
+	} else {
+		return nil, err
+	}
+	{{ end }}
 
 	return &dest, nil
 }
@@ -155,7 +174,7 @@ import (
 var methods = map[string]struct{
 	Do func(*baller.Client) (interface{}, error)
 }{
-	{{ range $i, $method := .methods }}"{{ $method.Name }}": {
+	{{ range $i, $method := .spec.Methods }}"{{ $method.Name }}": {
 		Do: func(cl *baller.Client) (interface{}, error) {
 			var (
 				fs = flag.NewFlagSet("{{ $method.Name }}", flag.ExitOnError)
