@@ -1,6 +1,16 @@
 {
     "methods": [
         {
+            "name": "CommonPlayerInfo",
+            "path": "commonplayerinfo",
+            "parameters": [
+                { "name": "PlayerID", "type": "int" }
+            ],
+            "results": [
+                { "name": "CommonPlayerInfo", "result_type": "Player" }
+            ]
+        },
+        {
             "name": "CommonAllPlayers",
             "path": "commonallplayers",
             "parameters": [
