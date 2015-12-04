@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/serenize/snaker"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -36,6 +37,10 @@ type resultType struct {
 type param struct {
 	Name string `json:"name"`
 	Type string `json:"type"`
+}
+
+func (p param) FieldName() string {
+	return snaker.SnakeToCamel(strings.ToLower(p.Name))
 }
 
 func (p param) StringEnc() string {
@@ -120,7 +125,7 @@ import (
 {{ range $i, $typ := .spec.ResultTypes }}
 type Result{{ $typ.Name }} struct {
 	{{ range $k, $p := $typ.Headers }}
-	{{ $p.Name }} {{ $p.Type }} ` + "`header:" + `"{{ $p.Name }}"` + "`" + `{{ end }}
+	{{ $p.FieldName }} {{ $p.Type }} ` + "`header:" + `"{{ $p.Name }}"` + "`" + `{{ end }}
 }
 {{ end }}
 
