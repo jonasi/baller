@@ -14,13 +14,17 @@ import (
 var methods = map[string]struct {
 	Do func(*baller.Client) (interface{}, error)
 }{
-	"CommonPlayerInfo": {
+	"BoxScore": {
 		Do: func(cl *baller.Client) (interface{}, error) {
 			var (
-				fs       = flag.NewFlagSet("CommonPlayerInfo", flag.ExitOnError)
-				verbose  = fs.Bool("verbose", false, "")
-				PlayerID = fs.Int("PlayerID", 0, "")
-				LeagueID = fs.String("LeagueID", "", "")
+				fs          = flag.NewFlagSet("BoxScore", flag.ExitOnError)
+				verbose     = fs.Bool("verbose", false, "")
+				GameID      = fs.String("GameID", "", "")
+				StartPeriod = fs.Int("StartPeriod", 0, "")
+				EndPeriod   = fs.Int("EndPeriod", 0, "")
+				StartRange  = fs.Int("StartRange", 0, "")
+				EndRange    = fs.Int("EndRange", 0, "")
+				RangeType   = fs.Int("RangeType", 0, "")
 			)
 
 			fs.Parse(os.Args[2:])
@@ -29,7 +33,7 @@ var methods = map[string]struct {
 				cl.Logger = os.Stderr
 			}
 
-			return cl.CommonPlayerInfo(*PlayerID, *LeagueID)
+			return cl.BoxScore(*GameID, *StartPeriod, *EndPeriod, *StartRange, *EndRange, *RangeType)
 		},
 	},
 	"CommonAllPlayers": {
@@ -49,6 +53,24 @@ var methods = map[string]struct {
 			}
 
 			return cl.CommonAllPlayers(*LeagueID, *Season, *IsOnlyCurrentSeason)
+		},
+	},
+	"CommonPlayerInfo": {
+		Do: func(cl *baller.Client) (interface{}, error) {
+			var (
+				fs       = flag.NewFlagSet("CommonPlayerInfo", flag.ExitOnError)
+				verbose  = fs.Bool("verbose", false, "")
+				PlayerID = fs.Int("PlayerID", 0, "")
+				LeagueID = fs.String("LeagueID", "", "")
+			)
+
+			fs.Parse(os.Args[2:])
+
+			if *verbose {
+				cl.Logger = os.Stderr
+			}
+
+			return cl.CommonPlayerInfo(*PlayerID, *LeagueID)
 		},
 	},
 	"Scoreboard": {

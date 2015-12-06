@@ -1,15 +1,30 @@
 {
     "methods": [
         {
-            "name": "CommonPlayerInfo",
-            "path": "commonplayerinfo",
+            "name": "BoxScore",
+            "path": "boxscore",
             "parameters": [
-                { "name": "PlayerID", "type": "int" },
-                { "name": "LeagueID", "type": "string" }
+                { "name": "GameID", "type": "string" },
+                { "name": "StartPeriod", "type": "int" },
+                { "name": "EndPeriod", "type": "int" },
+                { "name": "StartRange", "type": "int" },
+                { "name": "EndRange", "type": "int" },
+                { "name": "RangeType", "type": "int" }
             ],
             "results": [
-                { "name": "CommonPlayerInfo", "result_type": "PlayerInfo" },
-                { "name": "PlayerHeadlineStats", "result_type": "PlayerHeadlineStats" }
+                { "name": "GameSummary", "result_type": "GameHeader" },
+                { "name": "LineScore", "result_type": "LineScoreAbbv" },
+                { "name": "SeasonSeries", "result_type": "SeriesStandings" },
+                { "name": "LastMeeting", "result_type": "LastMeeting" },
+                { "name": "PlayerStats", "result_type": "PlayerStats" },
+                { "name": "TeamStats", "result_type": "TeamStats" },
+                { "name": "OtherStats", "result_type": "OtherStats" },
+                { "name": "Officials", "result_type": "Officials" },
+                { "name": "GameInfo", "result_type": "GameInfo" },
+                { "name": "InactivePlayers", "result_type": "InactivePlayer" },
+                { "name": "AvailableVideo", "result_type": "AvailableVideo" },
+                { "name": "PlayerTrack", "result_type": "PlayerTrack" },
+                { "name": "PlayerTrackTeam", "result_type": "PlayerTrackTeam" }
             ]
         },
         {
@@ -22,6 +37,18 @@
             ],
             "results": [
                 { "name": "CommonAllPlayers", "result_type": "Player" }
+            ]
+        },
+        {
+            "name": "CommonPlayerInfo",
+            "path": "commonplayerinfo",
+            "parameters": [
+                { "name": "PlayerID", "type": "int" },
+                { "name": "LeagueID", "type": "string" }
+            ],
+            "results": [
+                { "name": "CommonPlayerInfo", "result_type": "PlayerInfo" },
+                { "name": "PlayerHeadlineStats", "result_type": "PlayerHeadlineStats" }
             ]
         },
         {
@@ -89,112 +116,139 @@
             "headers": [
                 { "name": "GAME_DATE_EST", "type": "string" },
                 { "name": "GAME_SEQUENCE", "type": "int" },
-                { "name": "GAME_ID", "type": "string"},
-                { "name": "TEAM_ID", "type": "int"},
-                { "name": "TEAM_ABBREVIATION", "type": "string"},
-                { "name": "TEAM_CITY_NAME", "type": "string"},
-                { "name": "TEAM_WINS_LOSSES", "type": "string"},
-                { "name": "PTS_QTR1", "type": "int"},
-                { "name": "PTS_QTR2", "type": "int"},
-                { "name": "PTS_QTR3", "type": "int"},
-                { "name": "PTS_QTR4", "type": "int"},
-                { "name": "PTS_OT1", "type": "int"},
-                { "name": "PTS_OT2", "type": "int"},
-                { "name": "PTS_OT3", "type": "int"},
-                { "name": "PTS_OT4", "type": "int"},
-                { "name": "PTS_OT5", "type": "int"},
-                { "name": "PTS_OT6", "type": "int"},
-                { "name": "PTS_OT7", "type": "int"},
-                { "name": "PTS_OT8", "type": "int"},
-                { "name": "PTS_OT9", "type": "int"},
-                { "name": "PTS_OT10", "type": "int"},
-                { "name": "PTS", "type": "int"},
-                { "name": "FG_PCT", "type": "float32"},
-                { "name": "FT_PCT", "type": "float32"},
-                { "name": "FG3_PCT", "type": "float32"},
-                { "name": "AST", "type": "int"},
-                { "name": "REB", "type": "int"},
-                { "name": "TOV", "type": "int"}
+                { "name": "GAME_ID", "type": "string" },
+                { "name": "TEAM_ID", "type": "int" },
+                { "name": "TEAM_ABBREVIATION", "type": "string" },
+                { "name": "TEAM_CITY_NAME", "type": "string" },
+                { "name": "TEAM_WINS_LOSSES", "type": "string" },
+                { "name": "PTS_QTR1", "type": "int" },
+                { "name": "PTS_QTR2", "type": "int" },
+                { "name": "PTS_QTR3", "type": "int" },
+                { "name": "PTS_QTR4", "type": "int" },
+                { "name": "PTS_OT1", "type": "int" },
+                { "name": "PTS_OT2", "type": "int" },
+                { "name": "PTS_OT3", "type": "int" },
+                { "name": "PTS_OT4", "type": "int" },
+                { "name": "PTS_OT5", "type": "int" },
+                { "name": "PTS_OT6", "type": "int" },
+                { "name": "PTS_OT7", "type": "int" },
+                { "name": "PTS_OT8", "type": "int" },
+                { "name": "PTS_OT9", "type": "int" },
+                { "name": "PTS_OT10", "type": "int" },
+                { "name": "PTS", "type": "int" },
+                { "name": "FG_PCT", "type": "float32" },
+                { "name": "FT_PCT", "type": "float32" },
+                { "name": "FG3_PCT", "type": "float32" },
+                { "name": "AST", "type": "int" },
+                { "name": "REB", "type": "int" },
+                { "name": "TOV", "type": "int" }
+            ]
+        },
+        {
+            "name": "LineScoreAbbv",
+            "headers": [
+                { "name": "GAME_DATE_EST", "type": "string" },
+                { "name": "GAME_SEQUENCE", "type": "int" },
+                { "name": "GAME_ID", "type": "string" },
+                { "name": "TEAM_ID", "type": "int" },
+                { "name": "TEAM_ABBREVIATION", "type": "string" },
+                { "name": "TEAM_CITY_NAME", "type": "string" },
+                { "name": "TEAM_WINS_LOSSES", "type": "string" },
+                { "name": "PTS_QTR1", "type": "int" },
+                { "name": "PTS_QTR2", "type": "int" },
+                { "name": "PTS_QTR3", "type": "int" },
+                { "name": "PTS_QTR4", "type": "int" },
+                { "name": "PTS_OT1", "type": "int" },
+                { "name": "PTS_OT2", "type": "int" },
+                { "name": "PTS_OT3", "type": "int" },
+                { "name": "PTS_OT4", "type": "int" },
+                { "name": "PTS_OT5", "type": "int" },
+                { "name": "PTS_OT6", "type": "int" },
+                { "name": "PTS_OT7", "type": "int" },
+                { "name": "PTS_OT8", "type": "int" },
+                { "name": "PTS_OT9", "type": "int" },
+                { "name": "PTS_OT10", "type": "int" },
+                { "name": "PTS", "type": "int" }
             ]
         },
         {
             "name": "SeriesStandings",
             "headers": [
-                { "name": "GAME_ID", "type": "string"},
-                { "name": "HOME_TEAM_ID", "type": "int"},
-                { "name": "VISITOR_TEAM_ID", "type": "int"},
-                { "name": "GAME_DATE_EST", "type": "string"},
-                { "name": "HOME_TEAM_WINS", "type": "int"},
-                { "name": "HOME_TEAM_LOSSES", "type": "int"},
-                { "name": "SERIES_LEADER", "type": "string"}
+                { "name": "GAME_ID", "type": "string" },
+                { "name": "HOME_TEAM_ID", "type": "int" },
+                { "name": "VISITOR_TEAM_ID", "type": "int" },
+                { "name": "GAME_DATE_EST", "type": "string" },
+                { "name": "HOME_TEAM_WINS", "type": "int" },
+                { "name": "HOME_TEAM_LOSSES", "type": "int" },
+                { "name": "SERIES_LEADER", "type": "string" }
             ]
         },
         {
             "name": "LastMeeting",
             "headers": [
-                { "name": "GAME_ID", "type": "string"},
-                { "name": "LAST_GAME_ID", "type": "string"},
-                { "name": "LAST_GAME_DATE_EST", "type": "string"},
-                { "name": "LAST_GAME_HOME_TEAM_ID", "type": "int"},
-                { "name": "LAST_GAME_HOME_TEAM_CITY", "type": "string"},
-                { "name": "LAST_GAME_HOME_TEAM_NAME", "type": "string"},
-                { "name": "LAST_GAME_HOME_TEAM_ABBREVIATION", "type": "string"},
-                { "name": "LAST_GAME_HOME_TEAM_POINTS", "type": "int"},
-                { "name": "LAST_GAME_VISITOR_TEAM_ID", "type": "int"},
-                { "name": "LAST_GAME_VISITOR_TEAM_CITY", "type": "string"},
-                { "name": "LAST_GAME_VISITOR_TEAM_NAME", "type": "string"},
-                { "name": "LAST_GAME_VISITOR_TEAM_CITY1", "type": "string"},
-                { "name": "LAST_GAME_VISITOR_TEAM_POINTS", "type": "int"}
+                { "name": "GAME_ID", "type": "string" },
+                { "name": "LAST_GAME_ID", "type": "string" },
+                { "name": "LAST_GAME_DATE_EST", "type": "string" },
+                { "name": "LAST_GAME_HOME_TEAM_ID", "type": "int" },
+                { "name": "LAST_GAME_HOME_TEAM_CITY", "type": "string" },
+                { "name": "LAST_GAME_HOME_TEAM_NAME", "type": "string" },
+                { "name": "LAST_GAME_HOME_TEAM_ABBREVIATION", "type": "string" },
+                { "name": "LAST_GAME_HOME_TEAM_POINTS", "type": "int" },
+                { "name": "LAST_GAME_VISITOR_TEAM_ID", "type": "int" },
+                { "name": "LAST_GAME_VISITOR_TEAM_CITY", "type": "string" },
+                { "name": "LAST_GAME_VISITOR_TEAM_NAME", "type": "string" },
+                { "name": "LAST_GAME_VISITOR_TEAM_CITY1", "type": "string" },
+                { "name": "LAST_GAME_VISITOR_TEAM_POINTS", "type": "int" }
             ]
         },
         {
             "name": "ConferenceStandings",
             "headers": [
-                { "name": "TEAM_ID", "type": "int"},
-                { "name": "LEAGUE_ID", "type": "string"},
-                { "name": "SEASON_ID", "type": "string"},
-                { "name": "STANDINGSDATE", "type": "string"},
-                { "name": "CONFERENCE", "type": "string"},
-                { "name": "TEAM", "type": "string"},
-                { "name": "GAME", "type": "int"},
-                { "name": "W", "type": "int"},
-                { "name": "L", "type": "int"},
-                { "name": "W_PCT", "type": "float32"},
-                { "name": "HOME_RECORD", "type": "string"},
-                { "name": "ROAD_RECORD", "type": "string"}
+                { "name": "TEAM_ID", "type": "int" },
+                { "name": "LEAGUE_ID", "type": "string" },
+                { "name": "SEASON_ID", "type": "string" },
+                { "name": "STANDINGSDATE", "type": "string" },
+                { "name": "CONFERENCE", "type": "string" },
+                { "name": "TEAM", "type": "string" },
+                { "name": "GAME", "type": "int" },
+                { "name": "W", "type": "int" },
+                { "name": "L", "type": "int" },
+                { "name": "W_PCT", "type": "float32" },
+                { "name": "HOME_RECORD", "type": "string" },
+                { "name": "ROAD_RECORD", "type": "string" }
             ]
         },
         {
             "name": "Available",
             "headers": [
-                { "name": "GAME_ID", "type": "string"},
-                { "name": "PT_AVAILABLE", "type": "int"}
+                { "name": "GAME_ID", "type": "string" },
+                { "name": "PT_AVAILABLE", "type": "int" }
             ]
         },
         {
             "name": "TeamLeaders",
             "headers": [
-                { "name": "GAME_ID", "type": "string"},
-                { "name": "TEAM_ID", "type": "int"},
-                { "name": "TEAM_CITY", "type": "string"},
-                { "name": "TEAM_NICKNAME", "type": "string"},
-                { "name": "TEAM_ABBREVIATION", "type": "string"},
-                { "name": "PTS_PLAYER_ID", "type": "int"},
-                { "name": "PTS_PLAYER_NAME", "type": "string"},
-                { "name": "PTS", "type": "int"},
-                { "name": "REB_PLAYER_ID", "type": "int"},
-                { "name": "REB_PLAYER_NAME", "type": "string"},
-                { "name": "REB", "type": "int"},
-                { "name": "AST_PLAYER_ID", "type": "int"},
-                { "name": "AST_PLAYER_NAME", "type": "string"},
-                { "name": "AST", "type": "int"}
+                { "name": "GAME_ID", "type": "string" },
+                { "name": "TEAM_ID", "type": "int" },
+                { "name": "TEAM_CITY", "type": "string" },
+                { "name": "TEAM_NICKNAME", "type": "string" },
+                { "name": "TEAM_ABBREVIATION", "type": "string" },
+                { "name": "PTS_PLAYER_ID", "type": "int" },
+                { "name": "PTS_PLAYER_NAME", "type": "string" },
+                { "name": "PTS", "type": "int" },
+                { "name": "REB_PLAYER_ID", "type": "int" },
+                { "name": "REB_PLAYER_NAME", "type": "string" },
+                { "name": "REB", "type": "int" },
+                { "name": "AST_PLAYER_ID", "type": "int" },
+                { "name": "AST_PLAYER_NAME", "type": "string" },
+                { "name": "AST", "type": "int" }
             ]
         },
         {
             "name": "TicketLinks",
             "headers": [
-                { "name": "GAME_ID", "type": "string"},
-                { "name": "LEAG_TIX", "type": "string"}
+                { "name": "GAME_ID", "type": "string" },
+                { "name": "LEAG_TIX", "type": "string" }
             ]
         },
         {
@@ -255,6 +309,187 @@
                 { "name": "AST", "type": "float32" },
                 { "name": "REB", "type": "float32" },
                 { "name": "PIE", "type": "float32" }
+            ]
+        },
+        {
+            "name": "PlayerStats",
+            "headers": [
+                { "name": "GAME_ID", "type": "string" },
+                { "name": "TEAM_ID", "type": "int" },
+                { "name": "TEAM_ABBREVIATION", "type": "string" },
+                { "name": "TEAM_CITY", "type": "string" },
+                { "name": "PLAYER_ID", "type": "int" },
+                { "name": "PLAYER_NAME", "type": "string" },
+                { "name": "START_POSITION", "type": "string" },
+                { "name": "COMMENT", "type": "string" },
+                { "name": "MIN", "type": "string" },
+                { "name": "FGM", "type": "int" },
+                { "name": "FGA", "type": "int" },
+                { "name": "FG_PCT", "type": "float32" },
+                { "name": "FG3M", "type": "int" },
+                { "name": "FG3A", "type": "int" },
+                { "name": "FG3_PCT", "type": "float32" },
+                { "name": "FTM", "type": "int" },
+                { "name": "FTA", "type": "int" },
+                { "name": "FT_PCT", "type": "float32" },
+                { "name": "OREB", "type": "int" },
+                { "name": "DREB", "type": "int" },
+                { "name": "REB", "type": "int" },
+                { "name": "AST", "type": "int" },
+                { "name": "STL", "type": "int" },
+                { "name": "BLK", "type": "int" },
+                { "name": "TO", "type": "int" },
+                { "name": "PF", "type": "int" },
+                { "name": "PTS", "type": "int" },
+                { "name": "PLUS_MINUS", "type": "float32" }
+            ]
+        },
+        {
+            "name": "TeamStats",
+            "headers": [
+                { "name": "GAME_ID", "type": "string" },
+                { "name": "TEAM_ID", "type": "int" },
+                { "name": "TEAM_NAME", "type": "string" },
+                { "name": "TEAM_ABBREVIATION", "type": "string" },
+                { "name": "TEAM_CITY", "type": "string" },
+                { "name": "MIN", "type": "string" },
+                { "name": "FGM", "type": "int" },
+                { "name": "FGA", "type": "int" },
+                { "name": "FG_PCT", "type": "float32" },
+                { "name": "FG3M", "type": "int" },
+                { "name": "FG3A", "type": "int" },
+                { "name": "FG3_PCT", "type": "float32" },
+                { "name": "FTM", "type": "int" },
+                { "name": "FTA", "type": "int" },
+                { "name": "FT_PCT", "type": "float32" },
+                { "name": "OREB", "type": "int" },
+                { "name": "DREB", "type": "int" },
+                { "name": "REB", "type": "int" },
+                { "name": "AST", "type": "int" },
+                { "name": "STL", "type": "int" },
+                { "name": "BLK", "type": "int" },
+                { "name": "TO", "type": "int" },
+                { "name": "PF", "type": "int" },
+                { "name": "PTS", "type": "int" },
+                { "name": "PLUS_MINUS", "type": "float32" }
+            ]
+        },
+        {
+            "name": "OtherStats",
+            "headers": [
+                { "name": "LEAGUE_ID", "type": "string" },
+                { "name": "SEASON_ID", "type": "string" },
+                { "name": "TEAM_ID", "type": "int" },
+                { "name": "TEAM_ABBREVIATION", "type": "string" },
+                { "name": "TEAM_CITY", "type": "string" },
+                { "name": "PTS_PAINT", "type": "int" },
+                { "name": "PTS_2ND_CHANCE", "type": "int" },
+                { "name": "PTS_FB", "type": "int" },
+                { "name": "LARGEST_LEAD", "type": "int" },
+                { "name": "LEAD_CHANGES", "type": "int" },
+                { "name": "TIMES_TIED", "type": "int" }
+            ]
+        },
+        {
+            "name": "Officials",
+            "headers": [
+                { "name": "OFFICIAL_ID", "type": "int" },
+                { "name": "FIRST_NAME", "type": "string" },
+                { "name": "LAST_NAME", "type": "string" },
+                { "name": "JERSEY_NUM", "type": "string" }
+            ]
+        },
+        {
+            "name": "InactivePlayer",
+            "headers": [
+                { "name": "PLAYER_ID", "type": "int" },
+                { "name": "FIRST_NAME", "type": "string" },
+                { "name": "LAST_NAME", "type": "string" },
+                { "name": "JERSEY_NUM", "type": "string" },
+                { "name": "TEAM_ID", "type": "int" },
+                { "name": "TEAM_CITY", "type": "string" },
+                { "name": "TEAM_NAME", "type": "string" },
+                { "name": "TEAM_ABBREVIATION", "type": "string" }
+            ]
+        },
+        {
+            "name": "AvailableVideo",
+            "headers": [
+                { "name": "GAME_ID", "type": "string" },
+                { "name": "VIDEO_AVAILABLE_FLAG", "type": "int" },
+                { "name": "PT_AVAILABLE", "type": "int" }
+            ]
+        },
+        {
+            "name": "GameInfo",
+            "headers": [
+                { "name": "GAME_DATE", "type": "string" },
+                { "name": "ATTENDANCE", "type": "int" },
+                { "name": "GAME_TIME", "type": "string" }
+            ]
+        },
+        {
+            "name": "PlayerTrack",
+            "headers": [
+                { "name": "GAME_ID", "type": "string" },
+                { "name": "TEAM_ID", "type": "int" },
+                { "name": "TEAM_ABBREVIATION", "type": "string" },
+                { "name": "TEAM_CITY", "type": "string" },
+                { "name": "PLAYER_ID", "type": "int" },
+                { "name": "PLAYER_NAME", "type": "string" },
+                { "name": "START_POSITION", "type": "string" },
+                { "name": "COMMENT", "type": "string" },
+                { "name": "MIN", "type": "string" },
+                { "name": "SPD", "type": "float32" },
+                { "name": "DIST", "type": "float32" },
+                { "name": "ORBC", "type": "int" },
+                { "name": "DRBC", "type": "int" },
+                { "name": "RBC", "type": "int" },
+                { "name": "TCHS", "type": "int" },
+                { "name": "SAST", "type": "int" },
+                { "name": "FTAST", "type": "int" },
+                { "name": "PASS", "type": "int" },
+                { "name": "AST", "type": "int" },
+                { "name": "CFGM", "type": "int" },
+                { "name": "CFGA", "type": "int" },
+                { "name": "CFG_PCT", "type": "float32" },
+                { "name": "UFGM", "type": "int" },
+                { "name": "UFGA", "type": "int" },
+                { "name": "UFG_PCT", "type": "float32" },
+                { "name": "FG_PCT", "type": "float32" },
+                { "name": "DFGM", "type": "int" },
+                { "name": "DFGA", "type": "int" },
+                { "name": "DFG_PCT", "type": "float32" }
+            ]
+        },
+        {
+            "name": "PlayerTrackTeam",
+            "headers": [
+                { "name": "GAME_ID", "type": "string" },
+                { "name": "TEAM_ID", "type": "int" },
+                { "name": "TEAM_NICKNAME", "type": "string" },
+                { "name": "TEAM_ABBREVIATION", "type": "string" },
+                { "name": "TEAM_CITY", "type": "string" },
+                { "name": "MIN", "type": "string" },
+                { "name": "DIST", "type": "float32" },
+                { "name": "ORBC", "type": "int" },
+                { "name": "DRBC", "type": "int" },
+                { "name": "RBC", "type": "int" },
+                { "name": "TCHS", "type": "int" },
+                { "name": "SAST", "type": "int" },
+                { "name": "FTAST", "type": "int" },
+                { "name": "PASS", "type": "int" },
+                { "name": "AST", "type": "int" },
+                { "name": "CFGM", "type": "int" },
+                { "name": "CFGA", "type": "int" },
+                { "name": "CFG_PCT", "type": "float32" },
+                { "name": "UFGM", "type": "int" },
+                { "name": "UFGA", "type": "int" },
+                { "name": "UFG_PCT", "type": "float32" },
+                { "name": "FG_PCT", "type": "float32" },
+                { "name": "DFGM", "type": "int" },
+                { "name": "DFGA", "type": "int" },
+                { "name": "DFG_PCT", "type": "float32" }
             ]
         }
     ]

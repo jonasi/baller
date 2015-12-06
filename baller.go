@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"reflect"
+	"strings"
 )
 
 const (
@@ -148,10 +149,12 @@ func decodeResultSet(dest interface{}, headers []string, rowset []json.RawMessag
 		v  = reflect.ValueOf(dest)
 		t  = v.Type().Elem()
 		mp = mkHeaderMap(t)
+		d  = diff(headers, mp)
 	)
 
-	if len(headers) != len(mp) {
-		return fmt.Errorf("Expected %d headers, found %d for type %T\nheaders: %#v\nmap: %#v", len(headers), len(mp), dest, headers, mp)
+	if len(d) != 0 {
+		dstr := strings.Join(d, ", ")
+		return fmt.Errorf("Expected %d headers, found %d for type %T\nDiff: [%s]", len(headers), len(mp), dest, dstr)
 	}
 
 	for i := range rowset {
@@ -185,4 +188,29 @@ func mkHeaderMap(t reflect.Type) map[string]int {
 	}
 
 	return mp
+}
+
+func diff(headers []string, mp map[string]int) []string {
+	var (
+		exp  = map[string]struct{}{}
+		diff = []string{}
+	)
+
+	for _, h := range headers {
+		if _, ok := mp[h]; !ok {
+			diff = append(diff, "Expected "+h)
+		}
+
+		exp[h] = struct{}{}
+	}
+
+	for h := range mp {
+		if _, ok := exp[h]; ok {
+			continue
+		}
+
+		diff = append(diff, "Unexpected "+h)
+	}
+
+	return diff
 }
