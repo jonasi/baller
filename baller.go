@@ -70,8 +70,8 @@ type Parameters map[string]interface{}
 
 func (p *Parameters) UnmarshalJSON(b []byte) error {
 	if b[0] == '{' {
-		p2 := map[string]interface{}(*p)
-		return json.Unmarshal(b, &p2)
+		p2 := (*map[string]interface{})(p)
+		return json.Unmarshal(b, p2)
 	}
 
 	var p2 []map[string]interface{}
