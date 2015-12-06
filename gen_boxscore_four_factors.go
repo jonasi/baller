@@ -4,6 +4,77 @@ import (
 	"net/url"
 )
 
+type BoxscoreFourFactorsOptions struct {
+	GameID      string
+	StartPeriod int
+	EndPeriod   int
+	StartRange  int
+	EndRange    int
+	RangeType   int
+}
+
+type BoxscoreFourFactorsResponse struct {
+	GameSummary           []BoxscoreFourFactorsGameSummary
+	LineScore             []BoxscoreFourFactorsLineScore
+	SeasonSeries          []BoxscoreFourFactorsSeasonSeries
+	LastMeeting           []BoxscoreFourFactorsLastMeeting
+	PlayerStats           []BoxscoreFourFactorsPlayerStats
+	TeamStats             []BoxscoreFourFactorsTeamStats
+	OtherStats            []BoxscoreFourFactorsOtherStats
+	Officials             []BoxscoreFourFactorsOfficials
+	GameInfo              []BoxscoreFourFactorsGameInfo
+	InactivePlayers       []BoxscoreFourFactorsInactivePlayers
+	AvailableVideo        []BoxscoreFourFactorsAvailableVideo
+	PlayerTrack           []BoxscoreFourFactorsPlayerTrack
+	PlayerTrackTeam       []BoxscoreFourFactorsPlayerTrackTeam
+	SqlPlayersFourFactors []BoxscoreFourFactorsSqlPlayersFourFactors
+	SqlTeamsFourFactors   []BoxscoreFourFactorsSqlTeamsFourFactors
+}
+
+func (c *Client) BoxscoreFourFactors(options *BoxscoreFourFactorsOptions) (*BoxscoreFourFactorsResponse, error) {
+	var (
+		q    = url.Values{}
+		url  = baseURL + "boxscorefourfactors?"
+		dest BoxscoreFourFactorsResponse
+		res  result
+	)
+
+	q.Set("GameID", encodeString(options.GameID))
+	q.Set("StartPeriod", encodeInt(options.StartPeriod))
+	q.Set("EndPeriod", encodeInt(options.EndPeriod))
+	q.Set("StartRange", encodeInt(options.StartRange))
+	q.Set("EndRange", encodeInt(options.EndRange))
+	q.Set("RangeType", encodeInt(options.RangeType))
+
+	if err := c.do(url+q.Encode(), &res); err != nil {
+		return nil, err
+	}
+
+	err := res.unmarshalResultSets(map[string]interface{}{
+		"GameSummary":           &dest.GameSummary,
+		"LineScore":             &dest.LineScore,
+		"SeasonSeries":          &dest.SeasonSeries,
+		"LastMeeting":           &dest.LastMeeting,
+		"PlayerStats":           &dest.PlayerStats,
+		"TeamStats":             &dest.TeamStats,
+		"OtherStats":            &dest.OtherStats,
+		"Officials":             &dest.Officials,
+		"GameInfo":              &dest.GameInfo,
+		"InactivePlayers":       &dest.InactivePlayers,
+		"AvailableVideo":        &dest.AvailableVideo,
+		"PlayerTrack":           &dest.PlayerTrack,
+		"PlayerTrackTeam":       &dest.PlayerTrackTeam,
+		"sqlPlayersFourFactors": &dest.SqlPlayersFourFactors,
+		"sqlTeamsFourFactors":   &dest.SqlTeamsFourFactors,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &dest, nil
+}
+
 type BoxscoreFourFactorsGameSummary struct {
 	GameDateEst                   string `header:"GAME_DATE_EST"`
 	GameSequence                  int    `header:"GAME_SEQUENCE"`
@@ -270,75 +341,4 @@ type BoxscoreFourFactorsSqlTeamsFourFactors struct {
 	OppFtaRate       float32 `header:"OPP_FTA_RATE"`
 	OppTovPct        float32 `header:"OPP_TOV_PCT"`
 	OppOrebPct       float32 `header:"OPP_OREB_PCT"`
-}
-
-type BoxscoreFourFactorsResponse struct {
-	GameSummary           []BoxscoreFourFactorsGameSummary
-	LineScore             []BoxscoreFourFactorsLineScore
-	SeasonSeries          []BoxscoreFourFactorsSeasonSeries
-	LastMeeting           []BoxscoreFourFactorsLastMeeting
-	PlayerStats           []BoxscoreFourFactorsPlayerStats
-	TeamStats             []BoxscoreFourFactorsTeamStats
-	OtherStats            []BoxscoreFourFactorsOtherStats
-	Officials             []BoxscoreFourFactorsOfficials
-	GameInfo              []BoxscoreFourFactorsGameInfo
-	InactivePlayers       []BoxscoreFourFactorsInactivePlayers
-	AvailableVideo        []BoxscoreFourFactorsAvailableVideo
-	PlayerTrack           []BoxscoreFourFactorsPlayerTrack
-	PlayerTrackTeam       []BoxscoreFourFactorsPlayerTrackTeam
-	SqlPlayersFourFactors []BoxscoreFourFactorsSqlPlayersFourFactors
-	SqlTeamsFourFactors   []BoxscoreFourFactorsSqlTeamsFourFactors
-}
-
-type BoxscoreFourFactorsOptions struct {
-	GameID      string
-	StartPeriod int
-	EndPeriod   int
-	StartRange  int
-	EndRange    int
-	RangeType   int
-}
-
-func (c *Client) BoxscoreFourFactors(options *BoxscoreFourFactorsOptions) (*BoxscoreFourFactorsResponse, error) {
-	var (
-		q    = url.Values{}
-		url  = baseURL + "boxscore_four_factors?"
-		dest BoxscoreFourFactorsResponse
-		res  result
-	)
-
-	q.Set("GameID", encodeString(options.GameID))
-	q.Set("StartPeriod", encodeInt(options.StartPeriod))
-	q.Set("EndPeriod", encodeInt(options.EndPeriod))
-	q.Set("StartRange", encodeInt(options.StartRange))
-	q.Set("EndRange", encodeInt(options.EndRange))
-	q.Set("RangeType", encodeInt(options.RangeType))
-
-	if err := c.do(url+q.Encode(), &res); err != nil {
-		return nil, err
-	}
-
-	err := res.unmarshalResultSets(map[string]interface{}{
-		"GameSummary":           &dest.GameSummary,
-		"LineScore":             &dest.LineScore,
-		"SeasonSeries":          &dest.SeasonSeries,
-		"LastMeeting":           &dest.LastMeeting,
-		"PlayerStats":           &dest.PlayerStats,
-		"TeamStats":             &dest.TeamStats,
-		"OtherStats":            &dest.OtherStats,
-		"Officials":             &dest.Officials,
-		"GameInfo":              &dest.GameInfo,
-		"InactivePlayers":       &dest.InactivePlayers,
-		"AvailableVideo":        &dest.AvailableVideo,
-		"PlayerTrack":           &dest.PlayerTrack,
-		"PlayerTrackTeam":       &dest.PlayerTrackTeam,
-		"sqlPlayersFourFactors": &dest.SqlPlayersFourFactors,
-		"sqlTeamsFourFactors":   &dest.SqlTeamsFourFactors,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &dest, nil
 }

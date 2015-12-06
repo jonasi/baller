@@ -4,7 +4,7 @@ import (
 	"net/url"
 )
 
-type BoxscoreAdvancedOptions struct {
+type BoxscoreUsageOptions struct {
 	GameID      string
 	StartPeriod int
 	EndPeriod   int
@@ -13,29 +13,29 @@ type BoxscoreAdvancedOptions struct {
 	RangeType   int
 }
 
-type BoxscoreAdvancedResponse struct {
-	GameSummary        []BoxscoreAdvancedGameSummary
-	LineScore          []BoxscoreAdvancedLineScore
-	SeasonSeries       []BoxscoreAdvancedSeasonSeries
-	LastMeeting        []BoxscoreAdvancedLastMeeting
-	PlayerStats        []BoxscoreAdvancedPlayerStats
-	TeamStats          []BoxscoreAdvancedTeamStats
-	OtherStats         []BoxscoreAdvancedOtherStats
-	Officials          []BoxscoreAdvancedOfficials
-	GameInfo           []BoxscoreAdvancedGameInfo
-	InactivePlayers    []BoxscoreAdvancedInactivePlayers
-	AvailableVideo     []BoxscoreAdvancedAvailableVideo
-	PlayerTrack        []BoxscoreAdvancedPlayerTrack
-	PlayerTrackTeam    []BoxscoreAdvancedPlayerTrackTeam
-	SqlPlayersAdvanced []BoxscoreAdvancedSqlPlayersAdvanced
-	SqlTeamsAdvanced   []BoxscoreAdvancedSqlTeamsAdvanced
+type BoxscoreUsageResponse struct {
+	GameSummary     []BoxscoreUsageGameSummary
+	LineScore       []BoxscoreUsageLineScore
+	SeasonSeries    []BoxscoreUsageSeasonSeries
+	LastMeeting     []BoxscoreUsageLastMeeting
+	PlayerStats     []BoxscoreUsagePlayerStats
+	TeamStats       []BoxscoreUsageTeamStats
+	OtherStats      []BoxscoreUsageOtherStats
+	Officials       []BoxscoreUsageOfficials
+	GameInfo        []BoxscoreUsageGameInfo
+	InactivePlayers []BoxscoreUsageInactivePlayers
+	AvailableVideo  []BoxscoreUsageAvailableVideo
+	PlayerTrack     []BoxscoreUsagePlayerTrack
+	PlayerTrackTeam []BoxscoreUsagePlayerTrackTeam
+	SqlPlayersUsage []BoxscoreUsageSqlPlayersUsage
+	SqlTeamsUsage   []BoxscoreUsageSqlTeamsUsage
 }
 
-func (c *Client) BoxscoreAdvanced(options *BoxscoreAdvancedOptions) (*BoxscoreAdvancedResponse, error) {
+func (c *Client) BoxscoreUsage(options *BoxscoreUsageOptions) (*BoxscoreUsageResponse, error) {
 	var (
 		q    = url.Values{}
-		url  = baseURL + "boxscoreadvanced?"
-		dest BoxscoreAdvancedResponse
+		url  = baseURL + "boxscoreusage?"
+		dest BoxscoreUsageResponse
 		res  result
 	)
 
@@ -51,21 +51,21 @@ func (c *Client) BoxscoreAdvanced(options *BoxscoreAdvancedOptions) (*BoxscoreAd
 	}
 
 	err := res.unmarshalResultSets(map[string]interface{}{
-		"GameSummary":        &dest.GameSummary,
-		"LineScore":          &dest.LineScore,
-		"SeasonSeries":       &dest.SeasonSeries,
-		"LastMeeting":        &dest.LastMeeting,
-		"PlayerStats":        &dest.PlayerStats,
-		"TeamStats":          &dest.TeamStats,
-		"OtherStats":         &dest.OtherStats,
-		"Officials":          &dest.Officials,
-		"GameInfo":           &dest.GameInfo,
-		"InactivePlayers":    &dest.InactivePlayers,
-		"AvailableVideo":     &dest.AvailableVideo,
-		"PlayerTrack":        &dest.PlayerTrack,
-		"PlayerTrackTeam":    &dest.PlayerTrackTeam,
-		"sqlPlayersAdvanced": &dest.SqlPlayersAdvanced,
-		"sqlTeamsAdvanced":   &dest.SqlTeamsAdvanced,
+		"GameSummary":     &dest.GameSummary,
+		"LineScore":       &dest.LineScore,
+		"SeasonSeries":    &dest.SeasonSeries,
+		"LastMeeting":     &dest.LastMeeting,
+		"PlayerStats":     &dest.PlayerStats,
+		"TeamStats":       &dest.TeamStats,
+		"OtherStats":      &dest.OtherStats,
+		"Officials":       &dest.Officials,
+		"GameInfo":        &dest.GameInfo,
+		"InactivePlayers": &dest.InactivePlayers,
+		"AvailableVideo":  &dest.AvailableVideo,
+		"PlayerTrack":     &dest.PlayerTrack,
+		"PlayerTrackTeam": &dest.PlayerTrackTeam,
+		"sqlPlayersUsage": &dest.SqlPlayersUsage,
+		"sqlTeamsUsage":   &dest.SqlTeamsUsage,
 	})
 
 	if err != nil {
@@ -75,7 +75,7 @@ func (c *Client) BoxscoreAdvanced(options *BoxscoreAdvancedOptions) (*BoxscoreAd
 	return &dest, nil
 }
 
-type BoxscoreAdvancedGameSummary struct {
+type BoxscoreUsageGameSummary struct {
 	GameDateEst                   string `header:"GAME_DATE_EST"`
 	GameSequence                  int    `header:"GAME_SEQUENCE"`
 	GameID                        string `header:"GAME_ID"`
@@ -92,7 +92,7 @@ type BoxscoreAdvancedGameSummary struct {
 	WhStatus                      int    `header:"WH_STATUS"`
 }
 
-type BoxscoreAdvancedLineScore struct {
+type BoxscoreUsageLineScore struct {
 	GameDateEst      string `header:"GAME_DATE_EST"`
 	GameSequence     int    `header:"GAME_SEQUENCE"`
 	GameID           string `header:"GAME_ID"`
@@ -117,7 +117,7 @@ type BoxscoreAdvancedLineScore struct {
 	Pts              int    `header:"PTS"`
 }
 
-type BoxscoreAdvancedSeasonSeries struct {
+type BoxscoreUsageSeasonSeries struct {
 	GameID         string `header:"GAME_ID"`
 	HomeTeamID     int    `header:"HOME_TEAM_ID"`
 	VisitorTeamID  int    `header:"VISITOR_TEAM_ID"`
@@ -127,7 +127,7 @@ type BoxscoreAdvancedSeasonSeries struct {
 	SeriesLeader   string `header:"SERIES_LEADER"`
 }
 
-type BoxscoreAdvancedLastMeeting struct {
+type BoxscoreUsageLastMeeting struct {
 	GameID                       string `header:"GAME_ID"`
 	LastGameID                   string `header:"LAST_GAME_ID"`
 	LastGameDateEst              string `header:"LAST_GAME_DATE_EST"`
@@ -143,7 +143,7 @@ type BoxscoreAdvancedLastMeeting struct {
 	LastGameVisitorTeamPoints    int    `header:"LAST_GAME_VISITOR_TEAM_POINTS"`
 }
 
-type BoxscoreAdvancedPlayerStats struct {
+type BoxscoreUsagePlayerStats struct {
 	GameID           string  `header:"GAME_ID"`
 	TeamID           int     `header:"TEAM_ID"`
 	TeamAbbreviation string  `header:"TEAM_ABBREVIATION"`
@@ -174,7 +174,7 @@ type BoxscoreAdvancedPlayerStats struct {
 	PlusMinus        float32 `header:"PLUS_MINUS"`
 }
 
-type BoxscoreAdvancedTeamStats struct {
+type BoxscoreUsageTeamStats struct {
 	GameID           string  `header:"GAME_ID"`
 	TeamID           int     `header:"TEAM_ID"`
 	TeamName         string  `header:"TEAM_NAME"`
@@ -202,7 +202,7 @@ type BoxscoreAdvancedTeamStats struct {
 	PlusMinus        float32 `header:"PLUS_MINUS"`
 }
 
-type BoxscoreAdvancedOtherStats struct {
+type BoxscoreUsageOtherStats struct {
 	LeagueID         string `header:"LEAGUE_ID"`
 	SeasonID         string `header:"SEASON_ID"`
 	TeamID           int    `header:"TEAM_ID"`
@@ -216,20 +216,20 @@ type BoxscoreAdvancedOtherStats struct {
 	TimesTied        int    `header:"TIMES_TIED"`
 }
 
-type BoxscoreAdvancedOfficials struct {
+type BoxscoreUsageOfficials struct {
 	OfficialID int    `header:"OFFICIAL_ID"`
 	FirstName  string `header:"FIRST_NAME"`
 	LastName   string `header:"LAST_NAME"`
 	JerseyNum  string `header:"JERSEY_NUM"`
 }
 
-type BoxscoreAdvancedGameInfo struct {
+type BoxscoreUsageGameInfo struct {
 	GameDate   string `header:"GAME_DATE"`
 	Attendance int    `header:"ATTENDANCE"`
 	GameTime   string `header:"GAME_TIME"`
 }
 
-type BoxscoreAdvancedInactivePlayers struct {
+type BoxscoreUsageInactivePlayers struct {
 	PlayerID         int    `header:"PLAYER_ID"`
 	FirstName        string `header:"FIRST_NAME"`
 	LastName         string `header:"LAST_NAME"`
@@ -240,13 +240,13 @@ type BoxscoreAdvancedInactivePlayers struct {
 	TeamAbbreviation string `header:"TEAM_ABBREVIATION"`
 }
 
-type BoxscoreAdvancedAvailableVideo struct {
+type BoxscoreUsageAvailableVideo struct {
 	GameID             string `header:"GAME_ID"`
 	VideoAvailableFlag int    `header:"VIDEO_AVAILABLE_FLAG"`
 	PtAvailable        int    `header:"PT_AVAILABLE"`
 }
 
-type BoxscoreAdvancedPlayerTrack struct {
+type BoxscoreUsagePlayerTrack struct {
 	GameID           string  `header:"GAME_ID"`
 	TeamID           int     `header:"TEAM_ID"`
 	TeamAbbreviation string  `header:"TEAM_ABBREVIATION"`
@@ -278,7 +278,7 @@ type BoxscoreAdvancedPlayerTrack struct {
 	DfgPct           float32 `header:"DFG_PCT"`
 }
 
-type BoxscoreAdvancedPlayerTrackTeam struct {
+type BoxscoreUsagePlayerTrackTeam struct {
 	GameID           string  `header:"GAME_ID"`
 	TeamID           int     `header:"TEAM_ID"`
 	TeamNickname     string  `header:"TEAM_NICKNAME"`
@@ -306,7 +306,7 @@ type BoxscoreAdvancedPlayerTrackTeam struct {
 	DfgPct           float32 `header:"DFG_PCT"`
 }
 
-type BoxscoreAdvancedSqlPlayersAdvanced struct {
+type BoxscoreUsageSqlPlayersUsage struct {
 	GameID           string  `header:"GAME_ID"`
 	TeamID           int     `header:"TEAM_ID"`
 	TeamAbbreviation string  `header:"TEAM_ABBREVIATION"`
@@ -316,43 +316,49 @@ type BoxscoreAdvancedSqlPlayersAdvanced struct {
 	StartPosition    string  `header:"START_POSITION"`
 	Comment          string  `header:"COMMENT"`
 	Min              string  `header:"MIN"`
-	OffRating        float32 `header:"OFF_RATING"`
-	DefRating        float32 `header:"DEF_RATING"`
-	NetRating        float32 `header:"NET_RATING"`
-	AstPct           float32 `header:"AST_PCT"`
-	AstTov           float32 `header:"AST_TOV"`
-	AstRatio         float32 `header:"AST_RATIO"`
-	OrebPct          float32 `header:"OREB_PCT"`
-	DrebPct          float32 `header:"DREB_PCT"`
-	RebPct           float32 `header:"REB_PCT"`
-	TmTovPct         float32 `header:"TM_TOV_PCT"`
-	EfgPct           float32 `header:"EFG_PCT"`
-	TsPct            float32 `header:"TS_PCT"`
 	UsgPct           float32 `header:"USG_PCT"`
-	Pace             float32 `header:"PACE"`
-	Pie              float32 `header:"PIE"`
+	PctFgm           float32 `header:"PCT_FGM"`
+	PctFga           float32 `header:"PCT_FGA"`
+	PctFg3m          float32 `header:"PCT_FG3M"`
+	PctFg3a          float32 `header:"PCT_FG3A"`
+	PctFtm           float32 `header:"PCT_FTM"`
+	PctFta           float32 `header:"PCT_FTA"`
+	PctOreb          float32 `header:"PCT_OREB"`
+	PctDreb          float32 `header:"PCT_DREB"`
+	PctReb           float32 `header:"PCT_REB"`
+	PctAst           float32 `header:"PCT_AST"`
+	PctTov           float32 `header:"PCT_TOV"`
+	PctStl           float32 `header:"PCT_STL"`
+	PctBlk           float32 `header:"PCT_BLK"`
+	PctBlka          float32 `header:"PCT_BLKA"`
+	PctPf            float32 `header:"PCT_PF"`
+	PctPfd           float32 `header:"PCT_PFD"`
+	PctPts           float32 `header:"PCT_PTS"`
 }
 
-type BoxscoreAdvancedSqlTeamsAdvanced struct {
-	GameID           string  `header:"GAME_ID"`
-	TeamID           int     `header:"TEAM_ID"`
-	TeamName         string  `header:"TEAM_NAME"`
-	TeamAbbreviation string  `header:"TEAM_ABBREVIATION"`
-	TeamCity         string  `header:"TEAM_CITY"`
-	Min              string  `header:"MIN"`
-	OffRating        float32 `header:"OFF_RATING"`
-	DefRating        float32 `header:"DEF_RATING"`
-	NetRating        float32 `header:"NET_RATING"`
-	AstPct           float32 `header:"AST_PCT"`
-	AstTov           float32 `header:"AST_TOV"`
-	AstRatio         float32 `header:"AST_RATIO"`
-	OrebPct          float32 `header:"OREB_PCT"`
-	DrebPct          float32 `header:"DREB_PCT"`
-	RebPct           float32 `header:"REB_PCT"`
-	TmTovPct         float32 `header:"TM_TOV_PCT"`
-	EfgPct           float32 `header:"EFG_PCT"`
-	TsPct            float32 `header:"TS_PCT"`
-	UsgPct           float32 `header:"USG_PCT"`
-	Pace             float32 `header:"PACE"`
-	Pie              float32 `header:"PIE"`
+type BoxscoreUsageSqlTeamsUsage struct {
+	GameID           string `header:"GAME_ID"`
+	TeamID           int    `header:"TEAM_ID"`
+	TeamName         string `header:"TEAM_NAME"`
+	TeamAbbreviation string `header:"TEAM_ABBREVIATION"`
+	TeamCity         string `header:"TEAM_CITY"`
+	Min              string `header:"MIN"`
+	UsgPct           int    `header:"USG_PCT"`
+	PctFgm           int    `header:"PCT_FGM"`
+	PctFga           int    `header:"PCT_FGA"`
+	PctFg3m          int    `header:"PCT_FG3M"`
+	PctFg3a          int    `header:"PCT_FG3A"`
+	PctFtm           int    `header:"PCT_FTM"`
+	PctFta           int    `header:"PCT_FTA"`
+	PctOreb          int    `header:"PCT_OREB"`
+	PctDreb          int    `header:"PCT_DREB"`
+	PctReb           int    `header:"PCT_REB"`
+	PctAst           int    `header:"PCT_AST"`
+	PctTov           int    `header:"PCT_TOV"`
+	PctStl           int    `header:"PCT_STL"`
+	PctBlk           int    `header:"PCT_BLK"`
+	PctBlka          int    `header:"PCT_BLKA"`
+	PctPf            int    `header:"PCT_PF"`
+	PctPfd           int    `header:"PCT_PFD"`
+	PctPts           int    `header:"PCT_PTS"`
 }

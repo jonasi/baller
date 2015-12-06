@@ -4,6 +4,73 @@ import (
 	"net/url"
 )
 
+type BoxscoreOptions struct {
+	GameID      string
+	StartPeriod int
+	EndPeriod   int
+	StartRange  int
+	EndRange    int
+	RangeType   int
+}
+
+type BoxscoreResponse struct {
+	GameSummary     []BoxscoreGameSummary
+	LineScore       []BoxscoreLineScore
+	SeasonSeries    []BoxscoreSeasonSeries
+	LastMeeting     []BoxscoreLastMeeting
+	PlayerStats     []BoxscorePlayerStats
+	TeamStats       []BoxscoreTeamStats
+	OtherStats      []BoxscoreOtherStats
+	Officials       []BoxscoreOfficials
+	GameInfo        []BoxscoreGameInfo
+	InactivePlayers []BoxscoreInactivePlayers
+	AvailableVideo  []BoxscoreAvailableVideo
+	PlayerTrack     []BoxscorePlayerTrack
+	PlayerTrackTeam []BoxscorePlayerTrackTeam
+}
+
+func (c *Client) Boxscore(options *BoxscoreOptions) (*BoxscoreResponse, error) {
+	var (
+		q    = url.Values{}
+		url  = baseURL + "boxscore?"
+		dest BoxscoreResponse
+		res  result
+	)
+
+	q.Set("GameID", encodeString(options.GameID))
+	q.Set("StartPeriod", encodeInt(options.StartPeriod))
+	q.Set("EndPeriod", encodeInt(options.EndPeriod))
+	q.Set("StartRange", encodeInt(options.StartRange))
+	q.Set("EndRange", encodeInt(options.EndRange))
+	q.Set("RangeType", encodeInt(options.RangeType))
+
+	if err := c.do(url+q.Encode(), &res); err != nil {
+		return nil, err
+	}
+
+	err := res.unmarshalResultSets(map[string]interface{}{
+		"GameSummary":     &dest.GameSummary,
+		"LineScore":       &dest.LineScore,
+		"SeasonSeries":    &dest.SeasonSeries,
+		"LastMeeting":     &dest.LastMeeting,
+		"PlayerStats":     &dest.PlayerStats,
+		"TeamStats":       &dest.TeamStats,
+		"OtherStats":      &dest.OtherStats,
+		"Officials":       &dest.Officials,
+		"GameInfo":        &dest.GameInfo,
+		"InactivePlayers": &dest.InactivePlayers,
+		"AvailableVideo":  &dest.AvailableVideo,
+		"PlayerTrack":     &dest.PlayerTrack,
+		"PlayerTrackTeam": &dest.PlayerTrackTeam,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &dest, nil
+}
+
 type BoxscoreGameSummary struct {
 	GameDateEst                   string `header:"GAME_DATE_EST"`
 	GameSequence                  int    `header:"GAME_SEQUENCE"`
@@ -233,71 +300,4 @@ type BoxscorePlayerTrackTeam struct {
 	Dfgm             int     `header:"DFGM"`
 	Dfga             int     `header:"DFGA"`
 	DfgPct           float32 `header:"DFG_PCT"`
-}
-
-type BoxscoreResponse struct {
-	GameSummary     []BoxscoreGameSummary
-	LineScore       []BoxscoreLineScore
-	SeasonSeries    []BoxscoreSeasonSeries
-	LastMeeting     []BoxscoreLastMeeting
-	PlayerStats     []BoxscorePlayerStats
-	TeamStats       []BoxscoreTeamStats
-	OtherStats      []BoxscoreOtherStats
-	Officials       []BoxscoreOfficials
-	GameInfo        []BoxscoreGameInfo
-	InactivePlayers []BoxscoreInactivePlayers
-	AvailableVideo  []BoxscoreAvailableVideo
-	PlayerTrack     []BoxscorePlayerTrack
-	PlayerTrackTeam []BoxscorePlayerTrackTeam
-}
-
-type BoxscoreOptions struct {
-	StartRange  int
-	EndRange    int
-	RangeType   int
-	GameID      string
-	StartPeriod int
-	EndPeriod   int
-}
-
-func (c *Client) Boxscore(options *BoxscoreOptions) (*BoxscoreResponse, error) {
-	var (
-		q    = url.Values{}
-		url  = baseURL + "boxscore?"
-		dest BoxscoreResponse
-		res  result
-	)
-
-	q.Set("StartRange", encodeInt(options.StartRange))
-	q.Set("EndRange", encodeInt(options.EndRange))
-	q.Set("RangeType", encodeInt(options.RangeType))
-	q.Set("GameID", encodeString(options.GameID))
-	q.Set("StartPeriod", encodeInt(options.StartPeriod))
-	q.Set("EndPeriod", encodeInt(options.EndPeriod))
-
-	if err := c.do(url+q.Encode(), &res); err != nil {
-		return nil, err
-	}
-
-	err := res.unmarshalResultSets(map[string]interface{}{
-		"GameSummary":     &dest.GameSummary,
-		"LineScore":       &dest.LineScore,
-		"SeasonSeries":    &dest.SeasonSeries,
-		"LastMeeting":     &dest.LastMeeting,
-		"PlayerStats":     &dest.PlayerStats,
-		"TeamStats":       &dest.TeamStats,
-		"OtherStats":      &dest.OtherStats,
-		"Officials":       &dest.Officials,
-		"GameInfo":        &dest.GameInfo,
-		"InactivePlayers": &dest.InactivePlayers,
-		"AvailableVideo":  &dest.AvailableVideo,
-		"PlayerTrack":     &dest.PlayerTrack,
-		"PlayerTrackTeam": &dest.PlayerTrackTeam,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &dest, nil
 }

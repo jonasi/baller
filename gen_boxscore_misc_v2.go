@@ -4,6 +4,51 @@ import (
 	"net/url"
 )
 
+type BoxscoreMiscV2Options struct {
+	GameID      string
+	StartPeriod int
+	EndPeriod   int
+	StartRange  int
+	EndRange    int
+	RangeType   int
+}
+
+type BoxscoreMiscV2Response struct {
+	SqlPlayersMisc []BoxscoreMiscV2SqlPlayersMisc
+	SqlTeamsMisc   []BoxscoreMiscV2SqlTeamsMisc
+}
+
+func (c *Client) BoxscoreMiscV2(options *BoxscoreMiscV2Options) (*BoxscoreMiscV2Response, error) {
+	var (
+		q    = url.Values{}
+		url  = baseURL + "boxscoremiscv2?"
+		dest BoxscoreMiscV2Response
+		res  result
+	)
+
+	q.Set("GameID", encodeString(options.GameID))
+	q.Set("StartPeriod", encodeInt(options.StartPeriod))
+	q.Set("EndPeriod", encodeInt(options.EndPeriod))
+	q.Set("StartRange", encodeInt(options.StartRange))
+	q.Set("EndRange", encodeInt(options.EndRange))
+	q.Set("RangeType", encodeInt(options.RangeType))
+
+	if err := c.do(url+q.Encode(), &res); err != nil {
+		return nil, err
+	}
+
+	err := res.unmarshalResultSets(map[string]interface{}{
+		"sqlPlayersMisc": &dest.SqlPlayersMisc,
+		"sqlTeamsMisc":   &dest.SqlTeamsMisc,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &dest, nil
+}
+
 type BoxscoreMiscV2SqlPlayersMisc struct {
 	GameID           string `header:"GAME_ID"`
 	TeamID           int    `header:"TEAM_ID"`
@@ -47,49 +92,4 @@ type BoxscoreMiscV2SqlTeamsMisc struct {
 	Blka             int     `header:"BLKA"`
 	Pf               int     `header:"PF"`
 	Pfd              int     `header:"PFD"`
-}
-
-type BoxscoreMiscV2Response struct {
-	SqlPlayersMisc []BoxscoreMiscV2SqlPlayersMisc
-	SqlTeamsMisc   []BoxscoreMiscV2SqlTeamsMisc
-}
-
-type BoxscoreMiscV2Options struct {
-	StartRange  int
-	EndRange    int
-	RangeType   int
-	GameID      string
-	StartPeriod int
-	EndPeriod   int
-}
-
-func (c *Client) BoxscoreMiscV2(options *BoxscoreMiscV2Options) (*BoxscoreMiscV2Response, error) {
-	var (
-		q    = url.Values{}
-		url  = baseURL + "boxscore_misc_v2?"
-		dest BoxscoreMiscV2Response
-		res  result
-	)
-
-	q.Set("StartRange", encodeInt(options.StartRange))
-	q.Set("EndRange", encodeInt(options.EndRange))
-	q.Set("RangeType", encodeInt(options.RangeType))
-	q.Set("GameID", encodeString(options.GameID))
-	q.Set("StartPeriod", encodeInt(options.StartPeriod))
-	q.Set("EndPeriod", encodeInt(options.EndPeriod))
-
-	if err := c.do(url+q.Encode(), &res); err != nil {
-		return nil, err
-	}
-
-	err := res.unmarshalResultSets(map[string]interface{}{
-		"sqlPlayersMisc": &dest.SqlPlayersMisc,
-		"sqlTeamsMisc":   &dest.SqlTeamsMisc,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &dest, nil
 }

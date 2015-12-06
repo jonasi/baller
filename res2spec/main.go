@@ -12,12 +12,13 @@ import (
 var (
 	responseFile = flag.String("response", "", "")
 	name         = flag.String("name", "", "")
+	path         = flag.String("path", "", "")
 )
 
 func main() {
 	flag.Parse()
 
-	err := do(*responseFile, *name)
+	err := do(*responseFile, *path, *name)
 
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
@@ -77,7 +78,7 @@ func (p *parameters) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func do(path, name string) error {
+func do(path, apiPath, name string) error {
 	f := os.Stdin
 
 	if path != "" && path != "-" {
@@ -95,6 +96,7 @@ func do(path, name string) error {
 
 	ep := spec.Endpoint{
 		Name:       res.Resource,
+		Path:       apiPath,
 		Parameters: make([]spec.Value, len(res.Parameters)),
 		ResultSets: make([]spec.ResultSet, len(res.ResultSets)),
 	}

@@ -6,11 +6,11 @@ import (
 	"os"
 )
 
-func cmd_boxscore_advanced(cl *baller.Client) (interface{}, error) {
+func cmd_boxscore_usage(cl *baller.Client) (interface{}, error) {
 	var (
-		fs      = flag.NewFlagSet("boxscore_advanced", flag.ExitOnError)
+		fs      = flag.NewFlagSet("boxscore_usage", flag.ExitOnError)
 		verbose = fs.Bool("verbose", false, "")
-		options baller.BoxscoreAdvancedOptions
+		options baller.BoxscoreUsageOptions
 	)
 
 	fs.StringVar(&options.GameID, "GameID", "", "")
@@ -26,9 +26,9 @@ func cmd_boxscore_advanced(cl *baller.Client) (interface{}, error) {
 		cl.Logger = os.Stderr
 	}
 
-	return cl.BoxscoreAdvanced(&options)
+	return cl.BoxscoreUsage(&options)
 }
 
 func init() {
-	methods["boxscore_advanced"] = cmd_boxscore_advanced
+	methods["boxscore_usage"] = cmd_boxscore_usage
 }

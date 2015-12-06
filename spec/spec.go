@@ -2,6 +2,7 @@ package spec
 
 type Endpoint struct {
 	Name       string      `json:"name"`
+	Path       string      `json:"path"`
 	Parameters []Value     `json:"parameters"`
 	ResultSets []ResultSet `json:"result_sets"`
 }

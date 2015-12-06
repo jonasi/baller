@@ -4,6 +4,77 @@ import (
 	"net/url"
 )
 
+type BoxscoreMiscOptions struct {
+	GameID      string
+	StartPeriod int
+	EndPeriod   int
+	StartRange  int
+	EndRange    int
+	RangeType   int
+}
+
+type BoxscoreMiscResponse struct {
+	SqlPlayersMisc []BoxscoreMiscSqlPlayersMisc
+	SqlTeamsMisc   []BoxscoreMiscSqlTeamsMisc
+	Table2         []BoxscoreMiscTable2
+	Table3         []BoxscoreMiscTable3
+	Table4         []BoxscoreMiscTable4
+	Table5         []BoxscoreMiscTable5
+	Table6         []BoxscoreMiscTable6
+	Table7         []BoxscoreMiscTable7
+	Table8         []BoxscoreMiscTable8
+	Table9         []BoxscoreMiscTable9
+	Table10        []BoxscoreMiscTable10
+	Table11        []BoxscoreMiscTable11
+	Table12        []BoxscoreMiscTable12
+	Table13        []BoxscoreMiscTable13
+	Table14        []BoxscoreMiscTable14
+}
+
+func (c *Client) BoxscoreMisc(options *BoxscoreMiscOptions) (*BoxscoreMiscResponse, error) {
+	var (
+		q    = url.Values{}
+		url  = baseURL + "boxscoremisc?"
+		dest BoxscoreMiscResponse
+		res  result
+	)
+
+	q.Set("GameID", encodeString(options.GameID))
+	q.Set("StartPeriod", encodeInt(options.StartPeriod))
+	q.Set("EndPeriod", encodeInt(options.EndPeriod))
+	q.Set("StartRange", encodeInt(options.StartRange))
+	q.Set("EndRange", encodeInt(options.EndRange))
+	q.Set("RangeType", encodeInt(options.RangeType))
+
+	if err := c.do(url+q.Encode(), &res); err != nil {
+		return nil, err
+	}
+
+	err := res.unmarshalResultSets(map[string]interface{}{
+		"sqlPlayersMisc": &dest.SqlPlayersMisc,
+		"sqlTeamsMisc":   &dest.SqlTeamsMisc,
+		"Table2":         &dest.Table2,
+		"Table3":         &dest.Table3,
+		"Table4":         &dest.Table4,
+		"Table5":         &dest.Table5,
+		"Table6":         &dest.Table6,
+		"Table7":         &dest.Table7,
+		"Table8":         &dest.Table8,
+		"Table9":         &dest.Table9,
+		"Table10":        &dest.Table10,
+		"Table11":        &dest.Table11,
+		"Table12":        &dest.Table12,
+		"Table13":        &dest.Table13,
+		"Table14":        &dest.Table14,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &dest, nil
+}
+
 type BoxscoreMiscSqlPlayersMisc struct {
 	GameDateEst                   string `header:"GAME_DATE_EST"`
 	GameSequence                  int    `header:"GAME_SEQUENCE"`
@@ -278,75 +349,4 @@ type BoxscoreMiscTable14 struct {
 	Blka             int     `header:"BLKA"`
 	Pf               int     `header:"PF"`
 	Pfd              int     `header:"PFD"`
-}
-
-type BoxscoreMiscResponse struct {
-	SqlPlayersMisc []BoxscoreMiscSqlPlayersMisc
-	SqlTeamsMisc   []BoxscoreMiscSqlTeamsMisc
-	Table2         []BoxscoreMiscTable2
-	Table3         []BoxscoreMiscTable3
-	Table4         []BoxscoreMiscTable4
-	Table5         []BoxscoreMiscTable5
-	Table6         []BoxscoreMiscTable6
-	Table7         []BoxscoreMiscTable7
-	Table8         []BoxscoreMiscTable8
-	Table9         []BoxscoreMiscTable9
-	Table10        []BoxscoreMiscTable10
-	Table11        []BoxscoreMiscTable11
-	Table12        []BoxscoreMiscTable12
-	Table13        []BoxscoreMiscTable13
-	Table14        []BoxscoreMiscTable14
-}
-
-type BoxscoreMiscOptions struct {
-	EndPeriod   int
-	StartRange  int
-	EndRange    int
-	RangeType   int
-	GameID      string
-	StartPeriod int
-}
-
-func (c *Client) BoxscoreMisc(options *BoxscoreMiscOptions) (*BoxscoreMiscResponse, error) {
-	var (
-		q    = url.Values{}
-		url  = baseURL + "boxscore_misc?"
-		dest BoxscoreMiscResponse
-		res  result
-	)
-
-	q.Set("EndPeriod", encodeInt(options.EndPeriod))
-	q.Set("StartRange", encodeInt(options.StartRange))
-	q.Set("EndRange", encodeInt(options.EndRange))
-	q.Set("RangeType", encodeInt(options.RangeType))
-	q.Set("GameID", encodeString(options.GameID))
-	q.Set("StartPeriod", encodeInt(options.StartPeriod))
-
-	if err := c.do(url+q.Encode(), &res); err != nil {
-		return nil, err
-	}
-
-	err := res.unmarshalResultSets(map[string]interface{}{
-		"sqlPlayersMisc": &dest.SqlPlayersMisc,
-		"sqlTeamsMisc":   &dest.SqlTeamsMisc,
-		"Table2":         &dest.Table2,
-		"Table3":         &dest.Table3,
-		"Table4":         &dest.Table4,
-		"Table5":         &dest.Table5,
-		"Table6":         &dest.Table6,
-		"Table7":         &dest.Table7,
-		"Table8":         &dest.Table8,
-		"Table9":         &dest.Table9,
-		"Table10":        &dest.Table10,
-		"Table11":        &dest.Table11,
-		"Table12":        &dest.Table12,
-		"Table13":        &dest.Table13,
-		"Table14":        &dest.Table14,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &dest, nil
 }

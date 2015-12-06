@@ -74,27 +74,20 @@ var funcs = template.FuncMap{
 
 var apiTemplate = template.Must(template.New("").Funcs(funcs).Parse(`
 {{ $spec := .spec }}
-{{ range $i, $rs := .spec.ResultSets }}
-type {{ rsName $spec.Name $rs.Name }} struct {
-	{{ range $k, $p := $rs.Values }}
-	{{ fieldNameFromRS $p.Name }} {{ $p.Type }} ` + "`header:" + `"{{ $p.Name }}"` + "`" + `{{ end }}
+type {{ optionsName $spec.Name }} struct {
+	{{ range $j, $rs := $spec.Parameters }}
+	{{ fieldName $rs.Name }} {{ $rs.Type }}{{ end }}
 }
-{{ end }}
 
 type {{ responseName $spec.Name }} struct {
 	{{ range $j, $rs := $spec.ResultSets }}
 	{{ fieldName $rs.Name }} []{{ rsName $spec.Name $rs.Name }}{{ end }}
 }
 
-type {{ optionsName $spec.Name }} struct {
-	{{ range $j, $rs := $spec.Parameters }}
-	{{ fieldName $rs.Name }} {{ $rs.Type }}{{ end }}
-}
-
 func (c *Client) {{ methodName $spec.Name }}(options *{{ optionsName $spec.Name }}) (*{{ responseName $spec.Name }}, error) {
 	var (
 		q = url.Values{}
-		url = baseURL + "{{ $spec.Name }}?"
+		url = baseURL + "{{ $spec.Path }}?"
 		dest  {{ responseName $spec.Name }}
 		res result
 	)
@@ -115,4 +108,12 @@ func (c *Client) {{ methodName $spec.Name }}(options *{{ optionsName $spec.Name 
 	}
 
 	return &dest, nil
-}`))
+}
+
+{{ range $i, $rs := .spec.ResultSets }}
+type {{ rsName $spec.Name $rs.Name }} struct {
+	{{ range $k, $p := $rs.Values }}
+	{{ fieldNameFromRS $p.Name }} {{ $p.Type }} ` + "`header:" + `"{{ $p.Name }}"` + "`" + `{{ end }}
+}
+{{ end }}
+`))
