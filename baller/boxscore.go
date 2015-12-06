@@ -6,8 +6,6 @@ import (
 	"os"
 )
 
-//go:generate ./gen.sh $GOFILE $GOLINE boxscore?GameID=0021500277&StartPeriod=0&EndPeriod=4&StartRange=0&EndRange=0&RangeType=1
-
 func cmd_boxscore(cl *baller.Client) (interface{}, error) {
 	var (
 		fs      = flag.NewFlagSet("boxscore", flag.ExitOnError)

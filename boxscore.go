@@ -1,10 +1,6 @@
 package baller
 
-import (
-	"net/url"
-)
-
-//go:generate ./gen.sh $GOFILE $GOLINE boxscore?GameID=0021500277&StartPeriod=0&EndPeriod=4&StartRange=0&EndRange=0&RangeType=1
+import "net/url"
 
 type BoxscoreGameSummary struct {
 	GameDateEst                   string `header:"GAME_DATE_EST"`
@@ -254,12 +250,12 @@ type BoxscoreResponse struct {
 }
 
 type BoxscoreOptions struct {
-	EndPeriod   int
-	StartRange  int
 	EndRange    int
 	RangeType   int
 	GameID      string
 	StartPeriod int
+	EndPeriod   int
+	StartRange  int
 }
 
 func (c *Client) Boxscore(options *BoxscoreOptions) (*BoxscoreResponse, error) {
@@ -270,12 +266,12 @@ func (c *Client) Boxscore(options *BoxscoreOptions) (*BoxscoreResponse, error) {
 		res  result
 	)
 
-	q.Set("EndPeriod", encodeInt(options.EndPeriod))
-	q.Set("StartRange", encodeInt(options.StartRange))
 	q.Set("EndRange", encodeInt(options.EndRange))
 	q.Set("RangeType", encodeInt(options.RangeType))
 	q.Set("GameID", encodeString(options.GameID))
 	q.Set("StartPeriod", encodeInt(options.StartPeriod))
+	q.Set("EndPeriod", encodeInt(options.EndPeriod))
+	q.Set("StartRange", encodeInt(options.StartRange))
 
 	if err := c.do(url+q.Encode(), &res); err != nil {
 		return nil, err
