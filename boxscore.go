@@ -254,12 +254,12 @@ type BoxscoreResponse struct {
 }
 
 type BoxscoreOptions struct {
-	RangeType   int
-	GameID      string
-	StartPeriod int
 	EndPeriod   int
 	StartRange  int
 	EndRange    int
+	RangeType   int
+	GameID      string
+	StartPeriod int
 }
 
 func (c *Client) Boxscore(options *BoxscoreOptions) (*BoxscoreResponse, error) {
@@ -270,92 +270,34 @@ func (c *Client) Boxscore(options *BoxscoreOptions) (*BoxscoreResponse, error) {
 		res  result
 	)
 
-	q.Set("RangeType", encodeInt(options.RangeType))
-	q.Set("GameID", encodeString(options.GameID))
-	q.Set("StartPeriod", encodeInt(options.StartPeriod))
 	q.Set("EndPeriod", encodeInt(options.EndPeriod))
 	q.Set("StartRange", encodeInt(options.StartRange))
 	q.Set("EndRange", encodeInt(options.EndRange))
+	q.Set("RangeType", encodeInt(options.RangeType))
+	q.Set("GameID", encodeString(options.GameID))
+	q.Set("StartPeriod", encodeInt(options.StartPeriod))
 
 	if err := c.do(url+q.Encode(), &res); err != nil {
 		return nil, err
 	}
 
-	if d, err := res.unmarshalResultSet("GameSummary", BoxscoreGameSummary{}); err == nil {
-		dest.GameSummary = d.([]BoxscoreGameSummary)
-	} else {
-		return nil, err
-	}
+	err := res.unmarshalResultSets(map[string]interface{}{
+		"GameSummary":     &dest.GameSummary,
+		"LineScore":       &dest.LineScore,
+		"SeasonSeries":    &dest.SeasonSeries,
+		"LastMeeting":     &dest.LastMeeting,
+		"PlayerStats":     &dest.PlayerStats,
+		"TeamStats":       &dest.TeamStats,
+		"OtherStats":      &dest.OtherStats,
+		"Officials":       &dest.Officials,
+		"GameInfo":        &dest.GameInfo,
+		"InactivePlayers": &dest.InactivePlayers,
+		"AvailableVideo":  &dest.AvailableVideo,
+		"PlayerTrack":     &dest.PlayerTrack,
+		"PlayerTrackTeam": &dest.PlayerTrackTeam,
+	})
 
-	if d, err := res.unmarshalResultSet("LineScore", BoxscoreLineScore{}); err == nil {
-		dest.LineScore = d.([]BoxscoreLineScore)
-	} else {
-		return nil, err
-	}
-
-	if d, err := res.unmarshalResultSet("SeasonSeries", BoxscoreSeasonSeries{}); err == nil {
-		dest.SeasonSeries = d.([]BoxscoreSeasonSeries)
-	} else {
-		return nil, err
-	}
-
-	if d, err := res.unmarshalResultSet("LastMeeting", BoxscoreLastMeeting{}); err == nil {
-		dest.LastMeeting = d.([]BoxscoreLastMeeting)
-	} else {
-		return nil, err
-	}
-
-	if d, err := res.unmarshalResultSet("PlayerStats", BoxscorePlayerStats{}); err == nil {
-		dest.PlayerStats = d.([]BoxscorePlayerStats)
-	} else {
-		return nil, err
-	}
-
-	if d, err := res.unmarshalResultSet("TeamStats", BoxscoreTeamStats{}); err == nil {
-		dest.TeamStats = d.([]BoxscoreTeamStats)
-	} else {
-		return nil, err
-	}
-
-	if d, err := res.unmarshalResultSet("OtherStats", BoxscoreOtherStats{}); err == nil {
-		dest.OtherStats = d.([]BoxscoreOtherStats)
-	} else {
-		return nil, err
-	}
-
-	if d, err := res.unmarshalResultSet("Officials", BoxscoreOfficials{}); err == nil {
-		dest.Officials = d.([]BoxscoreOfficials)
-	} else {
-		return nil, err
-	}
-
-	if d, err := res.unmarshalResultSet("GameInfo", BoxscoreGameInfo{}); err == nil {
-		dest.GameInfo = d.([]BoxscoreGameInfo)
-	} else {
-		return nil, err
-	}
-
-	if d, err := res.unmarshalResultSet("InactivePlayers", BoxscoreInactivePlayers{}); err == nil {
-		dest.InactivePlayers = d.([]BoxscoreInactivePlayers)
-	} else {
-		return nil, err
-	}
-
-	if d, err := res.unmarshalResultSet("AvailableVideo", BoxscoreAvailableVideo{}); err == nil {
-		dest.AvailableVideo = d.([]BoxscoreAvailableVideo)
-	} else {
-		return nil, err
-	}
-
-	if d, err := res.unmarshalResultSet("PlayerTrack", BoxscorePlayerTrack{}); err == nil {
-		dest.PlayerTrack = d.([]BoxscorePlayerTrack)
-	} else {
-		return nil, err
-	}
-
-	if d, err := res.unmarshalResultSet("PlayerTrackTeam", BoxscorePlayerTrackTeam{}); err == nil {
-		dest.PlayerTrackTeam = d.([]BoxscorePlayerTrackTeam)
-	} else {
+	if err != nil {
 		return nil, err
 	}
 

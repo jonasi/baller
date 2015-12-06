@@ -101,7 +101,17 @@ type result struct {
 	}
 }
 
-func (r *result) unmarshalResultSet(name string, typ interface{}) (interface{}, error) {
+func (r *result) unmarshalResultSets(dests map[string]interface{}) error {
+	for name, dest := range dests {
+		if err := r.unmarshalResultSet(name, dest); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (r *result) unmarshalResultSet(name string, dest interface{}) error {
 	var (
 		headers []string
 		row     []json.RawMessage
@@ -116,32 +126,19 @@ func (r *result) unmarshalResultSet(name string, typ interface{}) (interface{}, 
 	}
 
 	if headers == nil {
-		return nil, fmt.Errorf("Row set %s not found", name)
+		return fmt.Errorf("Row set %s not found", name)
 	}
 
-	dest := reflect.MakeSlice(reflect.SliceOf(reflect.TypeOf(typ)), len(row), len(row)).Interface()
+	rv := reflect.ValueOf(dest)
+	sl := reflect.MakeSlice(reflect.SliceOf(rv.Type().Elem().Elem()), len(row), len(row))
 
-	if err := decodeResultSet(dest, headers, row); err != nil {
-		return nil, err
+	rv.Elem().Set(sl)
+
+	if err := decodeResultSet(sl.Interface(), headers, row); err != nil {
+		return err
 	}
 
-	return dest, nil
-}
-
-func (r *result) unmarshalResultSets(m map[string]interface{}) (map[string]interface{}, error) {
-	ret := map[string]interface{}{}
-
-	for k, typ := range m {
-		v, err := r.unmarshalResultSet(k, typ)
-
-		if err != nil {
-			return nil, err
-		}
-
-		ret[k] = v
-	}
-
-	return ret, nil
+	return nil
 }
 
 func decodeResultSet(dest interface{}, headers []string, rowset []json.RawMessage) error {

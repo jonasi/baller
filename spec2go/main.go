@@ -96,13 +96,13 @@ func (c *Client) {{ methodName $spec.Name }}(options *{{ optionsName $spec.Name 
 		return nil, err
 	}
 
-	{{ range $j, $rs := $spec.ResultSets }}
-	if d, err := res.unmarshalResultSet("{{ $rs.Name }}", {{ rsName $spec $rs }}{}); err == nil {
-		dest.{{ $rs.Name }} = d.([]{{ rsName $spec $rs }})
-	} else {
+	err := res.unmarshalResultSets(map[string]interface{}{ {{ range $j, $rs := $spec.ResultSets }}
+		"{{ $rs.Name }}": &dest.{{ $rs.Name }},{{ end }}
+	})
+	
+	if err != nil {
 		return nil, err
 	}
-	{{ end }}
 
 	return &dest, nil
 }`))
