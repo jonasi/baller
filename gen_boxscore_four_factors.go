@@ -1,8 +1,10 @@
 package baller
 
-import "net/url"
+import (
+	"net/url"
+)
 
-type BoxscoreGameSummary struct {
+type BoxscoreFourFactorsGameSummary struct {
 	GameDateEst                   string `header:"GAME_DATE_EST"`
 	GameSequence                  int    `header:"GAME_SEQUENCE"`
 	GameID                        string `header:"GAME_ID"`
@@ -19,7 +21,7 @@ type BoxscoreGameSummary struct {
 	WhStatus                      int    `header:"WH_STATUS"`
 }
 
-type BoxscoreLineScore struct {
+type BoxscoreFourFactorsLineScore struct {
 	GameDateEst      string `header:"GAME_DATE_EST"`
 	GameSequence     int    `header:"GAME_SEQUENCE"`
 	GameID           string `header:"GAME_ID"`
@@ -44,7 +46,7 @@ type BoxscoreLineScore struct {
 	Pts              int    `header:"PTS"`
 }
 
-type BoxscoreSeasonSeries struct {
+type BoxscoreFourFactorsSeasonSeries struct {
 	GameID         string `header:"GAME_ID"`
 	HomeTeamID     int    `header:"HOME_TEAM_ID"`
 	VisitorTeamID  int    `header:"VISITOR_TEAM_ID"`
@@ -54,7 +56,7 @@ type BoxscoreSeasonSeries struct {
 	SeriesLeader   string `header:"SERIES_LEADER"`
 }
 
-type BoxscoreLastMeeting struct {
+type BoxscoreFourFactorsLastMeeting struct {
 	GameID                       string `header:"GAME_ID"`
 	LastGameID                   string `header:"LAST_GAME_ID"`
 	LastGameDateEst              string `header:"LAST_GAME_DATE_EST"`
@@ -70,7 +72,7 @@ type BoxscoreLastMeeting struct {
 	LastGameVisitorTeamPoints    int    `header:"LAST_GAME_VISITOR_TEAM_POINTS"`
 }
 
-type BoxscorePlayerStats struct {
+type BoxscoreFourFactorsPlayerStats struct {
 	GameID           string  `header:"GAME_ID"`
 	TeamID           int     `header:"TEAM_ID"`
 	TeamAbbreviation string  `header:"TEAM_ABBREVIATION"`
@@ -101,7 +103,7 @@ type BoxscorePlayerStats struct {
 	PlusMinus        float32 `header:"PLUS_MINUS"`
 }
 
-type BoxscoreTeamStats struct {
+type BoxscoreFourFactorsTeamStats struct {
 	GameID           string  `header:"GAME_ID"`
 	TeamID           int     `header:"TEAM_ID"`
 	TeamName         string  `header:"TEAM_NAME"`
@@ -129,7 +131,7 @@ type BoxscoreTeamStats struct {
 	PlusMinus        float32 `header:"PLUS_MINUS"`
 }
 
-type BoxscoreOtherStats struct {
+type BoxscoreFourFactorsOtherStats struct {
 	LeagueID         string `header:"LEAGUE_ID"`
 	SeasonID         string `header:"SEASON_ID"`
 	TeamID           int    `header:"TEAM_ID"`
@@ -143,20 +145,20 @@ type BoxscoreOtherStats struct {
 	TimesTied        int    `header:"TIMES_TIED"`
 }
 
-type BoxscoreOfficials struct {
+type BoxscoreFourFactorsOfficials struct {
 	OfficialID int    `header:"OFFICIAL_ID"`
 	FirstName  string `header:"FIRST_NAME"`
 	LastName   string `header:"LAST_NAME"`
 	JerseyNum  string `header:"JERSEY_NUM"`
 }
 
-type BoxscoreGameInfo struct {
+type BoxscoreFourFactorsGameInfo struct {
 	GameDate   string `header:"GAME_DATE"`
 	Attendance int    `header:"ATTENDANCE"`
 	GameTime   string `header:"GAME_TIME"`
 }
 
-type BoxscoreInactivePlayers struct {
+type BoxscoreFourFactorsInactivePlayers struct {
 	PlayerID         int    `header:"PLAYER_ID"`
 	FirstName        string `header:"FIRST_NAME"`
 	LastName         string `header:"LAST_NAME"`
@@ -167,13 +169,13 @@ type BoxscoreInactivePlayers struct {
 	TeamAbbreviation string `header:"TEAM_ABBREVIATION"`
 }
 
-type BoxscoreAvailableVideo struct {
+type BoxscoreFourFactorsAvailableVideo struct {
 	GameID             string `header:"GAME_ID"`
 	VideoAvailableFlag int    `header:"VIDEO_AVAILABLE_FLAG"`
 	PtAvailable        int    `header:"PT_AVAILABLE"`
 }
 
-type BoxscorePlayerTrack struct {
+type BoxscoreFourFactorsPlayerTrack struct {
 	GameID           string  `header:"GAME_ID"`
 	TeamID           int     `header:"TEAM_ID"`
 	TeamAbbreviation string  `header:"TEAM_ABBREVIATION"`
@@ -205,7 +207,7 @@ type BoxscorePlayerTrack struct {
 	DfgPct           float32 `header:"DFG_PCT"`
 }
 
-type BoxscorePlayerTrackTeam struct {
+type BoxscoreFourFactorsPlayerTrackTeam struct {
 	GameID           string  `header:"GAME_ID"`
 	TeamID           int     `header:"TEAM_ID"`
 	TeamNickname     string  `header:"TEAM_NICKNAME"`
@@ -233,64 +235,105 @@ type BoxscorePlayerTrackTeam struct {
 	DfgPct           float32 `header:"DFG_PCT"`
 }
 
-type BoxscoreResponse struct {
-	GameSummary     []BoxscoreGameSummary
-	LineScore       []BoxscoreLineScore
-	SeasonSeries    []BoxscoreSeasonSeries
-	LastMeeting     []BoxscoreLastMeeting
-	PlayerStats     []BoxscorePlayerStats
-	TeamStats       []BoxscoreTeamStats
-	OtherStats      []BoxscoreOtherStats
-	Officials       []BoxscoreOfficials
-	GameInfo        []BoxscoreGameInfo
-	InactivePlayers []BoxscoreInactivePlayers
-	AvailableVideo  []BoxscoreAvailableVideo
-	PlayerTrack     []BoxscorePlayerTrack
-	PlayerTrackTeam []BoxscorePlayerTrackTeam
+type BoxscoreFourFactorsSqlPlayersFourFactors struct {
+	GameID           string  `header:"GAME_ID"`
+	TeamID           int     `header:"TEAM_ID"`
+	TeamAbbreviation string  `header:"TEAM_ABBREVIATION"`
+	TeamCity         string  `header:"TEAM_CITY"`
+	PlayerID         int     `header:"PLAYER_ID"`
+	PlayerName       string  `header:"PLAYER_NAME"`
+	StartPosition    string  `header:"START_POSITION"`
+	Comment          string  `header:"COMMENT"`
+	Min              string  `header:"MIN"`
+	EfgPct           float32 `header:"EFG_PCT"`
+	FtaRate          float32 `header:"FTA_RATE"`
+	TmTovPct         float32 `header:"TM_TOV_PCT"`
+	OrebPct          float32 `header:"OREB_PCT"`
+	OppEfgPct        float32 `header:"OPP_EFG_PCT"`
+	OppFtaRate       float32 `header:"OPP_FTA_RATE"`
+	OppTovPct        float32 `header:"OPP_TOV_PCT"`
+	OppOrebPct       float32 `header:"OPP_OREB_PCT"`
 }
 
-type BoxscoreOptions struct {
-	EndRange    int
-	RangeType   int
+type BoxscoreFourFactorsSqlTeamsFourFactors struct {
+	GameID           string  `header:"GAME_ID"`
+	TeamID           int     `header:"TEAM_ID"`
+	TeamName         string  `header:"TEAM_NAME"`
+	TeamAbbreviation string  `header:"TEAM_ABBREVIATION"`
+	TeamCity         string  `header:"TEAM_CITY"`
+	Min              string  `header:"MIN"`
+	EfgPct           float32 `header:"EFG_PCT"`
+	FtaRate          float32 `header:"FTA_RATE"`
+	TmTovPct         float32 `header:"TM_TOV_PCT"`
+	OrebPct          float32 `header:"OREB_PCT"`
+	OppEfgPct        float32 `header:"OPP_EFG_PCT"`
+	OppFtaRate       float32 `header:"OPP_FTA_RATE"`
+	OppTovPct        float32 `header:"OPP_TOV_PCT"`
+	OppOrebPct       float32 `header:"OPP_OREB_PCT"`
+}
+
+type BoxscoreFourFactorsResponse struct {
+	GameSummary           []BoxscoreFourFactorsGameSummary
+	LineScore             []BoxscoreFourFactorsLineScore
+	SeasonSeries          []BoxscoreFourFactorsSeasonSeries
+	LastMeeting           []BoxscoreFourFactorsLastMeeting
+	PlayerStats           []BoxscoreFourFactorsPlayerStats
+	TeamStats             []BoxscoreFourFactorsTeamStats
+	OtherStats            []BoxscoreFourFactorsOtherStats
+	Officials             []BoxscoreFourFactorsOfficials
+	GameInfo              []BoxscoreFourFactorsGameInfo
+	InactivePlayers       []BoxscoreFourFactorsInactivePlayers
+	AvailableVideo        []BoxscoreFourFactorsAvailableVideo
+	PlayerTrack           []BoxscoreFourFactorsPlayerTrack
+	PlayerTrackTeam       []BoxscoreFourFactorsPlayerTrackTeam
+	SqlPlayersFourFactors []BoxscoreFourFactorsSqlPlayersFourFactors
+	SqlTeamsFourFactors   []BoxscoreFourFactorsSqlTeamsFourFactors
+}
+
+type BoxscoreFourFactorsOptions struct {
 	GameID      string
 	StartPeriod int
 	EndPeriod   int
 	StartRange  int
+	EndRange    int
+	RangeType   int
 }
 
-func (c *Client) Boxscore(options *BoxscoreOptions) (*BoxscoreResponse, error) {
+func (c *Client) BoxscoreFourFactors(options *BoxscoreFourFactorsOptions) (*BoxscoreFourFactorsResponse, error) {
 	var (
 		q    = url.Values{}
-		url  = baseURL + "boxscore?"
-		dest BoxscoreResponse
+		url  = baseURL + "boxscore_four_factors?"
+		dest BoxscoreFourFactorsResponse
 		res  result
 	)
 
-	q.Set("EndRange", encodeInt(options.EndRange))
-	q.Set("RangeType", encodeInt(options.RangeType))
 	q.Set("GameID", encodeString(options.GameID))
 	q.Set("StartPeriod", encodeInt(options.StartPeriod))
 	q.Set("EndPeriod", encodeInt(options.EndPeriod))
 	q.Set("StartRange", encodeInt(options.StartRange))
+	q.Set("EndRange", encodeInt(options.EndRange))
+	q.Set("RangeType", encodeInt(options.RangeType))
 
 	if err := c.do(url+q.Encode(), &res); err != nil {
 		return nil, err
 	}
 
 	err := res.unmarshalResultSets(map[string]interface{}{
-		"GameSummary":     &dest.GameSummary,
-		"LineScore":       &dest.LineScore,
-		"SeasonSeries":    &dest.SeasonSeries,
-		"LastMeeting":     &dest.LastMeeting,
-		"PlayerStats":     &dest.PlayerStats,
-		"TeamStats":       &dest.TeamStats,
-		"OtherStats":      &dest.OtherStats,
-		"Officials":       &dest.Officials,
-		"GameInfo":        &dest.GameInfo,
-		"InactivePlayers": &dest.InactivePlayers,
-		"AvailableVideo":  &dest.AvailableVideo,
-		"PlayerTrack":     &dest.PlayerTrack,
-		"PlayerTrackTeam": &dest.PlayerTrackTeam,
+		"GameSummary":           &dest.GameSummary,
+		"LineScore":             &dest.LineScore,
+		"SeasonSeries":          &dest.SeasonSeries,
+		"LastMeeting":           &dest.LastMeeting,
+		"PlayerStats":           &dest.PlayerStats,
+		"TeamStats":             &dest.TeamStats,
+		"OtherStats":            &dest.OtherStats,
+		"Officials":             &dest.Officials,
+		"GameInfo":              &dest.GameInfo,
+		"InactivePlayers":       &dest.InactivePlayers,
+		"AvailableVideo":        &dest.AvailableVideo,
+		"PlayerTrack":           &dest.PlayerTrack,
+		"PlayerTrackTeam":       &dest.PlayerTrackTeam,
+		"sqlPlayersFourFactors": &dest.SqlPlayersFourFactors,
+		"sqlTeamsFourFactors":   &dest.SqlTeamsFourFactors,
 	})
 
 	if err != nil {

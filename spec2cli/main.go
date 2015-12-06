@@ -5,8 +5,8 @@ import (
 	"flag"
 	"fmt"
 	"github.com/jonasi/baller/spec"
+	"github.com/serenize/snaker"
 	"os"
-	"strings"
 	"text/template"
 )
 
@@ -43,9 +43,9 @@ func do(path string) error {
 }
 
 var funcs = template.FuncMap{
-	"methodName": strings.Title,
+	"methodName": snaker.SnakeToCamel,
 	"optionsName": func(str string) string {
-		return strings.Title(str) + "Options"
+		return snaker.SnakeToCamel(str) + "Options"
 	},
 	"flag": func(typ, name, setVar, varName string) string {
 		switch typ {

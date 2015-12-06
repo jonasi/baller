@@ -9,6 +9,8 @@ import (
 	"os"
 	"strings"
 	"text/template"
+	"unicode"
+	"unicode/utf8"
 )
 
 var specFile = flag.String("spec", "", "")
@@ -43,42 +45,50 @@ func do(path string) error {
 	})
 }
 
+func ucfirst(str string) string {
+	f, i := utf8.DecodeRuneInString(str)
+	return string(unicode.ToUpper(f)) + str[i:]
+}
+
 var funcs = template.FuncMap{
 	"responseName": func(str string) string {
-		return strings.Title(str) + "Response"
+		return snaker.SnakeToCamel(str) + "Response"
 	},
 	"optionsName": func(str string) string {
-		return strings.Title(str) + "Options"
+		return snaker.SnakeToCamel(str) + "Options"
 	},
-	"methodName": strings.Title,
-	"rsName": func(sp spec.Endpoint, rs spec.ResultSet) string {
-		return strings.Title(sp.Name) + rs.Name
+	"methodName": snaker.SnakeToCamel,
+	"rsName": func(sp, rs string) string {
+		return snaker.SnakeToCamel(sp) + ucfirst(rs)
 	},
 	"encodeFunc": func(str string) string {
-		return "encode" + strings.Title(str)
+		return "encode" + ucfirst(str)
 	},
 	"fieldName": func(str string) string {
-		return snaker.SnakeToCamel(strings.ToLower(str))
+		return ucfirst(snaker.SnakeToCamel(str))
+	},
+	"fieldNameFromRS": func(str string) string {
+		return ucfirst(snaker.SnakeToCamel(strings.ToLower(str)))
 	},
 }
 
 var apiTemplate = template.Must(template.New("").Funcs(funcs).Parse(`
 {{ $spec := .spec }}
-{{ range $i, $typ := .spec.ResultSets }}
-type {{ rsName $spec $typ }} struct {
-	{{ range $k, $p := $typ.Values }}
-	{{ fieldName $p.Name }} {{ $p.Type }} ` + "`header:" + `"{{ $p.Name }}"` + "`" + `{{ end }}
+{{ range $i, $rs := .spec.ResultSets }}
+type {{ rsName $spec.Name $rs.Name }} struct {
+	{{ range $k, $p := $rs.Values }}
+	{{ fieldNameFromRS $p.Name }} {{ $p.Type }} ` + "`header:" + `"{{ $p.Name }}"` + "`" + `{{ end }}
 }
 {{ end }}
 
 type {{ responseName $spec.Name }} struct {
 	{{ range $j, $rs := $spec.ResultSets }}
-	{{ $rs.Name }} []{{ rsName $spec $rs }}{{ end }}
+	{{ fieldName $rs.Name }} []{{ rsName $spec.Name $rs.Name }}{{ end }}
 }
 
 type {{ optionsName $spec.Name }} struct {
 	{{ range $j, $rs := $spec.Parameters }}
-	{{ $rs.Name }} {{ $rs.Type }}{{ end }}
+	{{ fieldName $rs.Name }} {{ $rs.Type }}{{ end }}
 }
 
 func (c *Client) {{ methodName $spec.Name }}(options *{{ optionsName $spec.Name }}) (*{{ responseName $spec.Name }}, error) {
@@ -97,7 +107,7 @@ func (c *Client) {{ methodName $spec.Name }}(options *{{ optionsName $spec.Name 
 	}
 
 	err := res.unmarshalResultSets(map[string]interface{}{ {{ range $j, $rs := $spec.ResultSets }}
-		"{{ $rs.Name }}": &dest.{{ $rs.Name }},{{ end }}
+		"{{ $rs.Name }}": &dest.{{ fieldName $rs.Name }},{{ end }}
 	})
 	
 	if err != nil {
