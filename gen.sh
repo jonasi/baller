@@ -2,6 +2,8 @@
 
 # https://github.com/albertlyu/nbadb/blob/master/data-model-notes.txt
 # https://github.com/seemethere/nba_py/wiki/stats.nba.com-Endpoint-Documentation
+# https://github.com/nickincardone/NBapi
+# https://github.com/bradleyfay/py-Goldsberry
 
 CACHE_DIR=.cache
 set -e
