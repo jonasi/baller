@@ -32,6 +32,10 @@ type rsVal struct {
 
 // only care about string,int,float
 func (v *rsVal) UnmarshalJSON(b []byte) error {
+	if bytes.Equal(b, []byte("null")) {
+		return nil
+	}
+
 	if b[0] == '"' {
 		v.typ = "string"
 	} else if bytes.Contains(b, []byte(".")) {
@@ -120,7 +124,22 @@ func do(path, apiPath, name string) error {
 
 		for j, h := range rs.Headers {
 			ep.ResultSets[i].Values[j].Name = h
-			ep.ResultSets[i].Values[j].Type = rs.RowSet[0][j].typ
+
+			k := 0
+			for {
+				if rs.RowSet[k][j].typ != "" {
+					ep.ResultSets[i].Values[j].Type = rs.RowSet[k][j].typ
+					break
+				}
+
+				k++
+
+				// haven't found a type - assign interface{}
+				if k == len(rs.RowSet) {
+					ep.ResultSets[i].Values[j].Type = "interface{}"
+					break
+				}
+			}
 		}
 	}
 

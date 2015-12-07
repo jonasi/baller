@@ -5,12 +5,12 @@ import (
 )
 
 type BoxscoreMiscV2Options struct {
-	GameID      string
-	StartPeriod int
-	EndPeriod   int
 	StartRange  int
 	EndRange    int
 	RangeType   int
+	GameID      string
+	StartPeriod int
+	EndPeriod   int
 }
 
 type BoxscoreMiscV2Response struct {
@@ -26,12 +26,12 @@ func (c *Client) BoxscoreMiscV2(options *BoxscoreMiscV2Options) (*BoxscoreMiscV2
 		res  result
 	)
 
-	q.Set("GameID", encodeString(options.GameID))
-	q.Set("StartPeriod", encodeInt(options.StartPeriod))
-	q.Set("EndPeriod", encodeInt(options.EndPeriod))
 	q.Set("StartRange", encodeInt(options.StartRange))
 	q.Set("EndRange", encodeInt(options.EndRange))
 	q.Set("RangeType", encodeInt(options.RangeType))
+	q.Set("GameID", encodeString(options.GameID))
+	q.Set("StartPeriod", encodeInt(options.StartPeriod))
+	q.Set("EndPeriod", encodeInt(options.EndPeriod))
 
 	if err := c.do(url+q.Encode(), &res); err != nil {
 		return nil, err
