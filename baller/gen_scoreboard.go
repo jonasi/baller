@@ -13,9 +13,9 @@ func cmd_scoreboard(cl *baller.Client) (interface{}, error) {
 		options baller.ScoreboardOptions
 	)
 
-	fs.StringVar(&options.DayOffset, "DayOffset", "", "")
 	fs.StringVar(&options.GameDate, "GameDate", "", "")
 	fs.StringVar(&options.LeagueID, "LeagueID", "", "")
+	fs.StringVar(&options.DayOffset, "DayOffset", "", "")
 
 	fs.Parse(os.Args[2:])
 

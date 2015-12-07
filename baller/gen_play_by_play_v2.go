@@ -13,9 +13,9 @@ func cmd_play_by_play_v2(cl *baller.Client) (interface{}, error) {
 		options baller.PlayByPlayV2Options
 	)
 
-	fs.IntVar(&options.EndPeriod, "EndPeriod", 0, "")
 	fs.StringVar(&options.GameID, "GameID", "", "")
 	fs.IntVar(&options.StartPeriod, "StartPeriod", 0, "")
+	fs.IntVar(&options.EndPeriod, "EndPeriod", 0, "")
 
 	fs.Parse(os.Args[2:])
 

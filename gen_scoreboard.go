@@ -5,9 +5,9 @@ import (
 )
 
 type ScoreboardOptions struct {
-	DayOffset string
 	GameDate  string
 	LeagueID  string
+	DayOffset string
 }
 
 type ScoreboardResponse struct {
@@ -28,9 +28,9 @@ func (c *Client) Scoreboard(options *ScoreboardOptions) (*ScoreboardResponse, er
 		res  result
 	)
 
-	q.Set("DayOffset", encodeString(options.DayOffset))
 	q.Set("GameDate", encodeString(options.GameDate))
 	q.Set("LeagueID", encodeString(options.LeagueID))
+	q.Set("DayOffset", encodeString(options.DayOffset))
 
 	if err := c.do(url+q.Encode(), &res); err != nil {
 		return nil, err

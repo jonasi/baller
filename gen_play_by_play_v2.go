@@ -5,9 +5,9 @@ import (
 )
 
 type PlayByPlayV2Options struct {
-	EndPeriod   int
 	GameID      string
 	StartPeriod int
+	EndPeriod   int
 }
 
 type PlayByPlayV2Response struct {
@@ -23,9 +23,9 @@ func (c *Client) PlayByPlayV2(options *PlayByPlayV2Options) (*PlayByPlayV2Respon
 		res  result
 	)
 
-	q.Set("EndPeriod", encodeInt(options.EndPeriod))
 	q.Set("GameID", encodeString(options.GameID))
 	q.Set("StartPeriod", encodeInt(options.StartPeriod))
+	q.Set("EndPeriod", encodeInt(options.EndPeriod))
 
 	if err := c.do(url+q.Encode(), &res); err != nil {
 		return nil, err

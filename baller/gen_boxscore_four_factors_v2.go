@@ -13,12 +13,12 @@ func cmd_boxscore_four_factors_v2(cl *baller.Client) (interface{}, error) {
 		options baller.BoxscoreFourFactorsV2Options
 	)
 
+	fs.StringVar(&options.GameID, "GameID", "", "")
+	fs.IntVar(&options.StartPeriod, "StartPeriod", 0, "")
 	fs.IntVar(&options.EndPeriod, "EndPeriod", 0, "")
 	fs.IntVar(&options.StartRange, "StartRange", 0, "")
 	fs.IntVar(&options.EndRange, "EndRange", 0, "")
 	fs.IntVar(&options.RangeType, "RangeType", 0, "")
-	fs.StringVar(&options.GameID, "GameID", "", "")
-	fs.IntVar(&options.StartPeriod, "StartPeriod", 0, "")
 
 	fs.Parse(os.Args[2:])
 

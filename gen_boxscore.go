@@ -5,12 +5,12 @@ import (
 )
 
 type BoxscoreOptions struct {
-	GameID      string
 	StartPeriod int
 	EndPeriod   int
 	StartRange  int
 	EndRange    int
 	RangeType   int
+	GameID      string
 }
 
 type BoxscoreResponse struct {
@@ -37,12 +37,12 @@ func (c *Client) Boxscore(options *BoxscoreOptions) (*BoxscoreResponse, error) {
 		res  result
 	)
 
-	q.Set("GameID", encodeString(options.GameID))
 	q.Set("StartPeriod", encodeInt(options.StartPeriod))
 	q.Set("EndPeriod", encodeInt(options.EndPeriod))
 	q.Set("StartRange", encodeInt(options.StartRange))
 	q.Set("EndRange", encodeInt(options.EndRange))
 	q.Set("RangeType", encodeInt(options.RangeType))
+	q.Set("GameID", encodeString(options.GameID))
 
 	if err := c.do(url+q.Encode(), &res); err != nil {
 		return nil, err

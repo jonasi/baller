@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"sort"
 
 	"github.com/jonasi/baller"
 )
@@ -44,7 +45,18 @@ func main() {
 
 func usage() {
 	fmt.Fprintln(os.Stderr, `Available Methods:`)
+
+	cmds := make([]string, len(methods))
+
+	i := 0
 	for k := range methods {
+		cmds[i] = k
+		i++
+	}
+
+	sort.Strings(cmds)
+
+	for _, k := range cmds {
 		fmt.Fprintf(os.Stderr, "\t%s\n", k)
 	}
 }

@@ -1,5 +1,8 @@
 #! /usr/bin/env bash
 
+# https://github.com/albertlyu/nbadb/blob/master/data-model-notes.txt
+# https://github.com/seemethere/nba_py/wiki/stats.nba.com-Endpoint-Documentation
+
 CACHE_DIR=.cache
 set -e
 
@@ -76,3 +79,7 @@ gen play_by_play playbyplay "GameID=0021500143&StartPeriod=0&EndPeriod=4"
 gen play_by_play_v2 playbyplayv2 "GameID=0021500143&StartPeriod=0&EndPeriod=4"
 gen scoreboard scoreboard "GameDate=2015%2F12%2F03&LeagueID=00&DayOffset=0"
 gen scoreboard_v2 scoreboardv2 "GameDate=2015%2F12%2F03&LeagueID=00&DayOffset=0"
+gen team_game_log teamgamelog "TeamID=1610612756&Season=2014-15&SeasonType=Regular%20Season&LeagueID=00"
+gen team_info_common teaminfocommon "TeamID=1610612756&Season=2014-15&SeasonType=Regular%20Season&LeagueID=00"
+# gen video_events videoevents "GameID=0021500299&GameEventID=1"
+gen video_status videostatus "GameDate=2015%2F12%2F03&LeagueID=00"
